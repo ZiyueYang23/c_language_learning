@@ -129,32 +129,32 @@
 
 // Complete myStrcpy();
 
-// #include <stdio.h>
-// #include <assert.h>
+#include <stdio.h>
+#include <assert.h>
 
-// char *myStrcpy(char *destination, const char *src);
+char *myStrcpy(char *destination, const char *src);
 
-// int main()
-// {
-//     char arr1[20] = "hello world!";
-//     char arr2[] = "xxxxxxxxxxxxxxx";
+int main()
+{
+    char arr1[20] = "hello world!";
+    char arr2[] = "xxxxxxxxxxxxxxx";
 
-//     printf("%s \n", myStrcpy(arr2, arr1));
+    printf("%s \n", myStrcpy(arr2, arr1));
 
-//     return 0;
-// }
+    return 0;
+}
 
-// char *myStrcpy(char *dest, const char *src)
-// {
-//     // 断言
-//     assert(*dest != NULL);
-//     assert(*src != NULL);
+char *myStrcpy(char *dest, const char *src)
+{
+    // 断言
+    assert(*dest != NULL);
+    assert(*src != NULL);
 
-//     char *ret = src;
+    char *ret = src;
 
-//     while (*dest++ = *src++)
-//         ;
+    while (*dest++ = *src++)
+        ;
 
-//     return ret;
-// }
+    return ret;
+}
 
