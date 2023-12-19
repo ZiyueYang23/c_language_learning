@@ -28,34 +28,33 @@
     1.1排序问题 -- -选择排序法（大到小）
 
         for (int a = 0; a < 9; a++)
-    {
-        for (int b = 1 + a; b < 10; b++) // 最关键的一步
         {
-            if (arr[a] < arr[b]) // 注意这个a与冒泡不同
+            for (int b = 1 + a; b < 10; b++) // 最关键的一步
             {
-                int c = arr[a];
-                arr[a] = arr[b];
-                arr[b] = c;
+                if (arr[a] < arr[b]) // 注意这个a与冒泡不同
+                {
+                    int c = arr[a];
+                    arr[a] = arr[b];
+                    arr[b] = c;
+                }
             }
         }
-    }
 
     1.2排序问题 -- -冒泡排序（小到大）
 
         for (int a = 0; a < 9; a++)
-    {
-        for (int b = 0; b < 9 - a; b++) // 两个方法最主要的区别就是这里
         {
-            if (arr[b] > arr[b + 1])
+            for (int b = 0; b < 9 - a; b++) // 两个方法最主要的区别就是这里
             {
-                int c = arr[b];
-                arr[b] = arr[b + 1];
-                arr[b + 1] = c;
+                if (arr[b] > arr[b + 1])
+                {
+                    int c = arr[b];
+                    arr[b] = arr[b + 1];
+                    arr[b + 1] = c;
+                }
             }
         }
-    }
 }
-
 
 
 2.三个数排序问题用指针的妙法
@@ -456,7 +455,7 @@ out:
 
 
 14.素数4.0
-{#pragma region 
+{#pragma region
     14.1.0
     {#pragma region 
 
@@ -499,7 +498,7 @@ out:
     14.2.0
     {#pragma region 
         // 2.0版本---为n/2次
-#include <stdio.h>
+        #include <stdio.h>
 
         int isprime(int);
 
@@ -542,9 +541,9 @@ out:
     {
         // 3.0我已经看不懂了--自己慢慢体会直接把代码对着敲下来
         // 制表啊，还有一些巧妙的数组数据存储，慢慢琢磨咯
-#include <stdio.h>
+        #include <stdio.h>
 
-#define NUMBER 10
+        #define NUMBER 10
 
         int isPrime(int x, int KnownPrimes[], int NumberOfKonwnPrimes);
 
@@ -618,9 +617,9 @@ out:
     14.4.0（新思路）
     {
         // 4.0另一种思维模式删除倍数
-#include <stdio.h>
+        #include <stdio.h>
 
-#define NUMBER 25
+        #define NUMBER 25
 
         int main()
         {
@@ -653,16 +652,18 @@ out:
             return 0;
         }
     }
-#pragma endregion}
+
+#pragma endregion
+}
 
 
 
 15.动态内存分配 --p =（int *）malloc（number * sizeof（）） free（）
 {
-#include <stdio.h>
-#include <stdlib.h>
+    #include <stdio.h>
+    #include <stdlib.h>
 
-#define NUMBER 20
+    #define NUMBER 20
     int main()
     {
         // 动态内存分配去定义数组
