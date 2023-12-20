@@ -1,14 +1,18 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 目录：
     {
-        1.typedef 类型定义
-        2.static 静态本地变量
-        3.宏的使用方法以及原则
-        4.一些快捷键的使用（超级有用）！！！
-        5.多文件的处理
-        6.格式化输出 printf scanf 
-        7.写出优质代码----const以及assert
-        8.如何使用Github，如何在vscode上提交代码
-        9.指针进阶-1.0版本--指针与数组
+         1.typedef 类型定义
+         2.static 静态本地变量
+         3.宏的使用方法以及原则
+         4.一些快捷键的使用（超级有用）！！！
+         5.多文件的处理
+         6.格式化输出 printf scanf 
+         7.写出优质代码----const以及assert
+         8.如何使用Github，如何在vscode上提交代码
+         9.指针进阶-1.0版本--指针与数组
+        10.指针进阶--2.0版本--指针与函数
+        11.字符串函数合集 //@ <string.h>
     }
 
 
@@ -208,6 +212,7 @@
 
 9.指针进阶--1.0版本--指针与数组
 {
+    //@ 目录 指针数组-数组指针-对数组名的探究分为一维数组和二维数组-以及数组指针数组（可以无限套娃哈哈哈）
 
 // 指针数组--重的是数组，每一个元素是指针
 //  #include <stdio.h>
@@ -250,7 +255,6 @@
 //         return 0;
 // }
 
-// //数组指针--重的是指针，是指向数组的指针
 // //初探
 // #include <stdio.h>
 // int main()
@@ -332,10 +336,10 @@
 //         //p是行地址，是指向整个数组的地址指向这一行，就如同arr加一个&arr，从列地址，即指向单一数据的转为行地址
 //         //指向整个数组，&是列转行，*就是行转列，就是让p从指向一整行的地址转为指向单一数据
 //         //*p=arr，p=&arr
-//         //确定这个之后再去思考如何去打印输出你想要的值，移动即可，注意我在这个地方还进行了一个优先级测试，*p[i]是错的，先衔接下标也就是直接动了
+//      //确定这个之后再去思考如何去打印输出你想要的值，移动即可，注意我在这个地方还进行了一个优先级测试，*p[i]是错的，先衔接下标也就是直接动了
 //         //一整个数组的值然后输出后面的值了
 //         //应该让*p先结合来代表arr，借助arr来思考会好一点然后arr[i]去输出每一个值
-//         //数组指针在一维数组上有点画蛇添足，很变扭，非要&arr地址，还要加一堆东西才能完成输出确实很变扭，但是说，数组指针真正用到的地方是2维数组
+//      //数组指针在一维数组上有点画蛇添足，很变扭，非要&arr地址，还要加一堆东西才能完成输出确实很变扭，但是说，数组指针真正用到的地方是2维数组
 //         //三维数组上。就如同我对&，和*作用的理解上，是基于二维数组来进行的，如果说一维数组，这个作用似乎不能这么理解对吧。
 //     }
 //
@@ -427,7 +431,8 @@
 
 
 10.指针进阶--2.0版本--指针与函数
-{
+{#pragma region
+
     {//初探指针函数
         #include <stdio.h>
 
@@ -461,7 +466,7 @@
             // 这个地方就可以看出Add与&Add是一样的
             // 无论如何这个地方随你怎么取地址怎么解引用地址都是这个值
 
-            //return 0;
+            // return 0;
         }
 
         int Add(int a, int b)
@@ -470,9 +475,708 @@
         }
     }
 
-    {//再探指针函数
-        
+    {#pragma region// 再探指针函数
+        {//版本一---没有明显问题但是很冗杂在case那个地方
+            #include <stdio.h>
 
+            void Menu();
+
+            void Add(int, int);
+            void Sub(int, int);
+            void Mul(int, int);
+            void Div(int, int);
+
+            // void Cal(int (*p)(int, int));
+
+            int main(void)
+            {
+                int input = 0;
+                int x = 0;
+                int y = 0;
+
+                do
+                {
+                    Menu();
+
+                    printf("请选择>:");
+                    scanf("%d", &input); // 加&&&&&&&&&&！！！！！！
+                    switch (input)
+                    {
+                    case 0:
+                        printf("退出计算器\n");
+                        break;
+                    case 1:
+                        printf("请输入两个操作数>:");
+                        scanf("%d %d", &x, &y); // 加&&&&&&&&&&&&！！！！！
+
+                        Add(x,y);
+                        break;
+                    case 2:
+                        printf("请输入两个操作数>:");
+                        scanf("%d %d", &x, &y); // 加&&&&&&&&&&&&！！！！！
+
+                        Sub(x,y);
+                        break;
+            //@这个地方老报错就注释了
+            //         case 3:
+            //             printf("请输入两个操作数>:");
+            //             scanf("%d %d", &x, &y); // 加&&&&&&&&&&&&！！！！！
+
+            //             Mul(x,y);
+            //             break;
+            //         case 4:
+            //             printf("请输入两个操作数>:");
+            //             scanf("%d %d", &x, &y); // 加&&&&&&&&&&&&！！！！！
+
+            //             Div(x,y);
+            //             break;
+            //         default:
+            //             printf("请重新输入\n");
+            //             break;
+                    }
+                } while (input);
+
+            //     return 0;
+            }
+
+            void Menu()
+            {
+                printf("*******************************\n");
+                printf("*****   1.Add    2.Sub  *******\n");
+                printf("*****   3.Mul    4.Div  *******\n");
+                printf("*****        0.exit     *******\n");
+                printf("*******************************\n");
+            }
+
+            void Add(int x, int y)
+            {
+                printf("%d\n", x + y);
+            }
+
+            void Sub(int x, int y)
+            {
+                printf("%d\n", x - y);
+            }
+
+            void Mul(int x, int y)
+            {
+                printf("%d\n", x * y);
+            }
+
+            void Div(int x, int y)
+            {
+                printf("%d\n", x / y);
+            }
+        }
+
+        //？ 那么这时候就想问了，函数指针有啥用的呢，该咋用呢？？？
+        //！ show time
+
+        {// 版本二---函数指针的实际用处
+            // //初探回调函数
+            // #include <stdio.h>
+
+            // void Menu();
+
+            // void Add(int, int);
+            // void Sub(int, int);
+            // void Mul(int, int);
+            // void Div(int, int);
+
+            // void Cal(int (*p)(int, int));
+
+            // int main(void)
+            // {
+            //     int input = 0;
+            //     int x = 0;
+            //     int y = 0;
+
+            //     do
+            //     {
+            //         Menu();
+
+            //         printf("请选择>:");
+            //         scanf("%d", &input); // 加&&&&&&&&&&！！！！！！
+            //         switch (input)
+            //         {
+            //         case 0:
+            //             printf("退出计算器\n");
+            //             break;
+            //         case 1:
+            //             Cal(&Add);
+            //             break;
+            //         case 2:
+            //             Cal(&Sub);
+            //             break;
+            //         case 3:
+            //             Cal(&Mul);
+            //             break;
+            //         case 4:
+            //             Cal(&Div);
+            //             break;
+            //         default:
+            //             printf("请重新输入\n");
+            //             break;
+            //         }
+            //     } while (input);
+
+            //     return 0;
+            // }
+
+            // void Menu()
+            // {
+            //     printf("*******************************\n");
+            //     printf("*****   1.Add    2.Sub  *******\n");
+            //     printf("*****   3.Mul    4.Div  *******\n");
+            //     printf("*****        0.exit     *******\n");
+            //     printf("*******************************\n");
+            // }
+
+            // void Add(int x, int y)
+            // {
+            //     printf("%d\n", x + y);
+            // }
+
+            // void Sub(int x, int y)
+            // {
+            //     printf("%d\n", x - y);
+            // }
+
+            // void Mul(int x, int y)
+            // {
+            //     printf("%d\n", x * y);
+            // }
+
+            // void Div(int x, int y)
+            // {
+            //     printf("%d\n", x / y);
+            // }
+
+            // void Cal(int (*p)(int x, int y))
+            // {
+            //     int x = 0;
+            //     int y = 0;
+
+            //     printf("请输入两个操作数>:");
+            //     scanf("%d %d", &x, &y); // 加&&&&&&&&&&&&！！！！！
+
+            //     (*p)(x, y);
+            // }
+        }
+    
+    #pragma endregion}
+
+    {#pragma region //初探函数指针数组
+
+        //版本三---函数指针数组--转换表
+        // 函数指针的数组
+        // 转换表
+
+        //？目的是，如果说我想加新功能，加十个加15个那你case要写十五个吗？
+        //！接下来就要用到函数指针数组
+        #include <stdio.h>
+
+        #define NUMBER 5
+        //未来大一点的项目就可以建一个新文件夹，然后把声明都放进.h里面，然后定义放game.c里面，再放一个test.c装这个就行咯
+
+        void Menu();
+
+        void Add(int, int);
+        void Sub(int, int);
+        void Mul(int, int);
+        void Div(int, int);
+
+        void Cal(int (*p)(int, int));
+
+        int main(void)
+        {
+            int input = 0;
+            int x = 0;
+            int y = 0;
+
+            void (*(parray[NUMBER]))(int, int) = {
+                0,
+                Add,
+                Sub,
+                Mul,
+                Div,
+            };
+
+            do
+            {
+                Menu();
+
+                printf("请选择>:");
+                scanf("%d", &input);
+
+                if(input==0)
+                {
+                    printf("退出计算机 \n");
+                }
+                else if (input >= 1 && input <= NUMBER)
+                {
+                    int x = 0;
+                    int y = 0;
+
+                    printf("请输入两个操作数>:");
+                    scanf("%d %d", &x, &y);
+                    //很巧妙的是在前面加了一个零，你输入input直接就可以作为数字进去代表函数，如果没有的话就减一就行
+
+                    parray[input](x, y);
+                    // parray[1]=Add,parray[1](x,y)=Add(x,y)
+                }
+                else
+                {
+                    printf("请重新输入 \n");
+                }
+
+            } while (input);
+        // 就可以简化代码咯
+        // 后期维护也就可以直接改NUMBER 和直接往数组里面加函数名就行了
+        //     do
+        //     {
+        //         Menu();
+
+        //         printf("请选择>:");
+        //         scanf("%d", &input); // 加&&&&&&&&&&！！！！！！
+        //         switch (input)
+        //         {
+        //         case 0:
+        //             printf("退出计算器\n");
+        //             break;
+        //         case 1:
+        //             Cal(&Add);
+        //             break;
+        //         case 2:
+        //             Cal(&Sub);
+        //             break;
+        //         case 3:
+        //             Cal(&Mul);
+        //             break;
+        //         case 4:
+        //             Cal(&Div);
+        //             break;
+        //         default:
+        //             printf("请重新输入\n");
+        //             break;
+        //         }
+        //     } while (input);
+
+            return 0;
+        }
+
+        void Menu()
+        {
+            printf("*******************************\n");
+            printf("*****   1.Add    2.Sub  *******\n");
+            printf("*****   3.Mul    4.Div  *******\n");
+            printf("*****        0.exit     *******\n");
+            printf("*******************************\n");
+        }
+
+        void Add(int x, int y)
+        {
+            printf("%d\n", x + y);
+        }
+
+        void Sub(int x, int y)
+        {
+            printf("%d\n", x - y);
+        }
+
+        void Mul(int x, int y)
+        {
+            printf("%d\n", x * y);
+        }
+
+        void Div(int x, int y)
+        {
+            printf("%d\n", x / y);
+        }
+
+        void Cal(int (*p)(int x, int y))
+        {
+            int x = 0;
+            int y = 0;
+
+            printf("请输入两个操作数>:");
+            scanf("%d %d", &x, &y); // 加&&&&&&&&&&&&！！！！！
+
+            (*p)(x, y);
+        }
+
+        // @ 总结 归纳 复习
+        // int(*(变量名))(int,int);
+        // 这个是函数指针
+        // int(*()[])(int ,int);
+        // 这个是函数指针数组，存放函数指针的数组，刚刚上面用来做了转换表
+        // int(*(*(变量名))[])(int,int);
+        // 这个是指向函数指针数组的指针
+        // 首先int (*parray[]) (int ,int );// 这是函数指针数组
+        // 现在要指针指向函数指针数组
+        // int ( * (* pparray)[] ) (int ,int )=&parray;
+        // 这个地方也同理先是*pparray是指针，类型是int（* (变量名) [] ）（int，int）
+        // 指向函数指针数组的指针（了解即可）
+        #pragma endregion } 
+
+    {// 初探回调函数-排序预习
+
+        // 先复习一下排序
+        //@1.冒泡排序
+        //  #include <stdio.h>
+
+        // void bubbleSort(int array[], int sz);
+        // void printSort(int array[], int sz);
+
+        // int main()
+        // {
+        //     int array[10] = {
+        //         9,
+        //         8,
+        //         7,
+        //         6,
+        //         5,
+        //         4,
+        //         3,
+        //         2,
+        //         1,
+        //         0,
+        //     };
+        //     int sz = 0;
+
+        //     sz = sizeof(array) / sizeof(array[0]);
+
+        //     bubbleSort(array, sz);
+        //     printSort(array, sz);
+
+        //     return 0;
+        // }
+
+        // void bubbleSort(int array[], int sz)
+        // {
+        //     int flag = 1;
+
+        //     for (int i = 0; i < sz - 1; i++)
+        //     {
+        //         for (int j = 0; j < sz - 1 - i;j++)
+        //         {
+        //             if (array[j] > array[j + 1])
+        //             {
+        //                 int tmp = array[j];
+        //                 array[j] = array[j + 1];
+        //                 array[j + 1] = tmp;
+        //                 flag = 0;
+        //             }
+        //         }
+
+        //         if(flag==1)
+        //         {
+        //             break;
+        //         }
+        //     }
+
+        // }
+
+        // void printSort(int array[], int sz)
+        // {
+        //     for (int i = 0; i < sz;i++)
+        //     {
+        //         printf("%d ", array[i]);
+        //     }
+        // }
+
+        //@2.选择排序
+        // #include <stdio.h>
+
+        // void selectSort(int array[], int sz);
+        // void printSort(int array[], int sz);
+
+        // int main()
+        // {
+        //     int array[10] = {
+        //         9,
+        //         8,
+        //         7,
+        //         6,
+        //         5,
+        //         4,
+        //         3,
+        //         2,
+        //         1,
+        //         0,
+        //     };
+        //     int sz = 0;
+
+        //     sz = sizeof(array) / sizeof(array[0]);
+
+        //     selectSort(array, sz);
+        //     printSort(array, sz);
+
+        //     return 0;
+        // }
+
+        // void selectSort(int array[], int sz)
+        // {
+        //     int flag = 1;
+
+        //     for (int i = 0; i < sz - 1; i++)
+        //     {
+        //         for (int j = i; j < sz; j++)
+        //         {
+        //             if (array[i] > array[j + 1])
+        //             {
+        //                 int tmp = array[i];
+        //                 array[i] = array[j + 1];
+        //                 array[j + 1] = tmp;
+        //                 flag = 0;
+        //             }
+        //         }
+
+        //         if (flag == 1)
+        //         {
+        //             break;
+        //         }
+        //     }
+        // }
+
+        // void selectSort(int array[], int sz)
+        // {
+        //     int flag = 1;
+
+        //     for (int i = 0; i < sz - 1;i++)
+        //     {
+        //         for (int j = i + 1; j < sz;j++)
+        //         {
+        //             if(array[i]>array[j])
+        //             {
+        //                 int tmp = array[i];
+        //                 array[i] = array[j];
+        //                 array[j] = tmp;
+
+        //                 flag = 0;
+        //             }
+        //             if(flag==1)
+        //             {
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // }
+
+        // void printSort(int array[], int sz)
+        // {
+        //     for (int i = 0; i < sz; i++)
+        //     {
+        //         printf("%d ", array[i]);
+        //     }
+        // }
     }
-}
 
+    {#pragma region//理解回调函数-qsort函数的用法
+
+        // void* 这个东东
+        // void*可以装地址，常用在函数指针里面传过来一个不确定的类型的地址过来
+        // 但是 void *p;这个东西就只能是用来承载地址，不能对它解引用也不能对它进行加减运算，为啥，没类型系统都不知道怎么动
+
+            // qsort这个库函数类型的用法
+            #include <stdio.h>
+            #include <stdlib.h>
+            // void qsort(void *base, size_t num, size_t width, int (*cmp)(const void *e1, const void *e2));
+
+            // 这是它的标准声明
+            //  void *base,给数组地址，要排序的东西的首元素地址
+            //  size_t num,给你要排几个元素  sizeof(arr)/sizeof(arr[0])
+            //  size_t width, 每一个元素的大小，由于类型不确定，你需要给出每一个元素的大小  sizeof(arr[0])
+            //  int (*cmp)(const void *e1, const void *e2)，关键点就在这里，也是这个库函数的精髓，就是你指定排序的规则（自己再做一个函数）
+            //  然后把函数地址传给这个库函数让它帮你完成快速排序
+            //  对其解释，为何用它，注意他都是void*，也就是你可以比较任何类型的数据，按照你想要的排序规则，这个库函数来帮你按照你的规则排序出你想要的类型
+
+            int cmp_int(const void *e1, const void *e2);
+            // Name is cmp_int,it is main that this is a int sort;
+            void printSort(int array[], int sz);
+
+            int main()
+            {
+                int arr[10] = {
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                };
+
+                qsort(arr, sizeof(arr) / sizeof(arr[0]), sizeof(arr[0]), cmp_int);
+                printSort(arr, sizeof(arr) / sizeof(arr[0]));
+
+                return 0;
+            }
+
+            // 版本一
+            //  int (*cmp_int)(const void *e1, const void *e2)
+            //  {
+            // 库函数对这个你指定规则的函数的返回值有要求，如何理解呢？你要实现排序，脱离出int类型排序的思维体系，int型就只有一个数比另一个数大或小或等于
+            // 但是请注意别的型呢？比如你要排序一个结构体数组，这里面有十个人的姓名学号分数等等，它比较先后的规则就是你指定的，但是他要返回值给库函数，让电脑
+            // 知道奥这个比那个大
+            // 规则就是如果大就返回>0的数，小于就返回<0的数，相等就返回0
+            // if(*e1>*e2)
+            // error 注意要强转
+            //      if(*(int*)e1>*(int*)e2)
+            //          return 1;
+            //      if(*(int*)e2>*(int*)e1)
+            //          return -1;
+            //      else
+            //          return 0;
+
+            // }
+
+            // 版本二
+
+            int cmp_int(const void *e1, const void *e2)
+            {
+                return *(int *)e2 - *(int *)e1;
+            }
+
+            void printSort(int arr[], int sz)
+            {
+                for (int i = 0; i < sz; i++)
+                {
+                    printf("%d ", arr[i]);
+                }
+            }
+
+            // 注意sizeof的用法
+            // int a[5];
+            // sizeof(a),只要是数组名单独用就是代表整体的
+            // int a[3][5]
+            // sizeof(a),就是3*5*4
+            // sizeof(a[0]),就是5*4，就是这一行，如果单拿出来（或者说除sizeof其余情况）a[0]就是首元素地址就是指向a[0][0],  不是行指针，此时的a是行指针
+    #pragma endregion}
+
+
+#pragma endregion}
+
+
+11.字符串函数合集 //@ <string.h>
+{
+    { //@ strlen
+      // 首先这是一个计算字符串长度的库函数包含在<string.h>之中
+      // ！ size_t strlen ( const char * str );
+      // 这是它的标准声明，返回值是无符号整型unsigned int ，传进去的就是地址，你可以直接双引号给一个字符串在它的括号里面
+      // 同样也可以传一个字符数组进去
+      //~ 1.结束
+      // 书接上文，需要注意的是字符串的最后会加一个‘\0’，而字符数组是不会的，字符数组有几个就是几个，当你把字符串放在括号里面就是
+      // 算出字符串中除去‘\0’的其他字符的数量。而当你把字符数组传进去的时候，//！strlen函数结束的标志是'\0'
+      // 你把字符数组传进去，你要的那块内存里面是没有‘\0’，也就是说它会自动往后延续，当遇到内存内容是0的才会结束，也就是说当你
+      // 字符数组传进去会出现一个大于等于你这个字符数组的大小的随机数
+      //~ 2.size_t无符号
+      // size_t是typedf define is unsigned int,它传回来的值是无符号整型也就是比如说你让strlen（“abc”）-strlen
+      // （“abcdef”）减出来的值，如果是整型就是3-6=-3但是它是无符号整型3-6就是一个很大的数补码，也就是不能这么直接减
+      // 那么我们怎么用呢？？ 直接比较就行if(strlen（“abc”）>strlen（“abcdef”）)
+      //if(strlen（“abc”）-strlen（“abcdef”）)可不行啊，它的结果就是一个很大的数
+      //~ 3.拓展一下字符串和字符数组的区别联系一下sizeof与strlen
+      // 你给sizeof传进去一个字符串比如“abcdef”结果是7，strlen就是6，你给他传进去字符数组char arr[5],sizeof(arr)就是5
+      //而你传给strlen一个字符数组结果是大于等于5，是一个随机值。
+      //~ 这个地方还可以展开说你忘sizeof里面放arr，arr[0]，*arr，&arr and so on..(上面有讲)(屏幕截图里面有存典例习题)
+    }
+
+    { //@ strcpy
+      //~ Introduction(前言)
+      // Take notes in English haha~~
+      // ！char *strcpy(char *destination, const char *source);
+      // 这个函数是实现字符串复制，复制包括了'\0'。
+      // 需要注意的点 1.注意复制字符串的长度，它不具有判断是否会溢出，长度不够的情况，所以作为coder你需要自己注意字符串长度
+      //            2.第一个地址是destination，即目的地，第二个地址是source，即来源。
+      //            3.返回值是一个char*型的地址，是destination的地址
+      //~ 1.End flag(结束标志)
+      // 结束标志是'\0'，字符串它自动加一个结束标志'\0'，如果说你传过去的字符串中间有'\0',他就不能复制后面的内容了
+      // 如果说你想把字符数组放进去复制，需要注意，字符数组不会自动加'\0'，你用之前要么自己加，否则就会出现问题，因为这个函数
+      // 只会看到'\0'停止，如果说你传字符数组进去就如同和上面计算长度函数一样，它会往后走，直到看到0，也就是字符的'\0'。
+      //~ 2.char*返回值
+      //返回值返回的是destination但是，你在指针复制的时候已经动了指针了所以你需要创建一个临时指针变量char*ret
+      //来承载你要返回的destination的地址
+      //~ 3.Try to realize it yourself(自己尝试实现)
+      {
+        #include <stdio.h>
+        #include <string.h>
+        #include <assert.h>
+
+          char *myStrcpy(char *destination, const char *source);
+
+          int main()
+          {
+              char arr1[20] = {'a', 'b', 'c', 'd', 'e', '\0'};
+              char arr2[20] = "Hello world!";
+              char *parr = "abcdef";
+
+              strcpy(arr1, arr2); //~right
+              // strcpy(arr2, arr1);  //！err
+              // 虽然说运行结果好像没啥问题但是说这个在别的编译器上是有问题的怎么理解
+              // 你把一复制过去，但是1里面是没有'\0'的，它按理说不知道怎么停但是是这个编译器牛逼可以自动帮你补
+              // strcpy(parr, arr2);  //！err
+              // 没有字符串变量，这个字符串你创建了就是就是这么多你不能改,它叫字符串常量自然也就不能更改。你把他存进数组里你可以改字符数组里
+              // 面的元素，在打印数组，你那个字符串还是在哪里的。
+              char arr3[20] = {0};
+              myStrcpy(arr3, arr1);
+              // vs真他妈舒服我靠
+              printf("%s\n", arr3);
+              printf("%s\n", arr1);
+
+              return 0;
+          }
+
+          char *myStrcpy(char *destination, const char *source)
+          {
+              assert(destination && source);
+              char *ret = destination;
+              // easy
+              //  assert(destination != NULL);
+              //  assert(source != NULL);
+              do
+              {
+                  /* code */
+                  *destination++ = *source++;
+
+              } while (*source != '\0');
+
+              return ret;
+          }
+      }
+    }
+
+    { //@ strcat
+      // 叫字符串追加
+      // ！ char *strcat(char *destination, const char *source);
+      // char arr1[]="Hello ";
+      // strcat(arr1,"world!");
+      // 就相当于把先把arr1的destination的指针移到了这个字符串的'\0'处，然后再进行strcpy，
+      // 需要注意的点就是数组大小你要控制好，别超了。
+    }
+
+    { //@ strcmp
+      // ！int strcmp ( const char * str1, const char * str2 );
+      //~几个注意点
+      //1.一个一个比较“abc”，“abcd”就是第一个小于第二个，一个一个比较，如果是相等就往后移。
+      //2.返回值如果比较到了一对字符出现了差别就会判断，大于就会返回一个大于0的值，小于就会返回一个小于0的值
+      //3.如果比比比到最后都相等就返回一个0
+    }
+
+    { //@ strn...
+      // ！int strncmp(const char *str1, const char *str2, size_t num);
+      // ！char * strncpy ( char * destination, const char * source, size_t num );
+      // ！char * strncat ( char * destination, const char * source, size_t num );
+      // 上面都是标准声明，就是后面加一个无符号整数，cmp就是比几个，cat就是接几个，cpy就是拷贝几个
+      //~需要注意的地方是strncat这个东东有点特殊的就是，比如说strncat(“Hello\0xxxxxxx”,"world",3);
+      // 这个地方我直接放字符串方便但是应该放数组，当指针到\0的地方停开始接字符把wor接上去，w换\0，
+      // 然后会自动带一个\0在最后，要不然你数组都停不了
+      //~另外strncpy也存在这个问题就是strncpy("Helloxxxxx","world",8);不仅把world带过去
+      // 而且还会自动补\0也就是“world\0\0\0xx\0”，
+      //~如果是strncpy("Helloxxxxx","world",3);他不会补\0的直接就是“worlloxxxxx”;
+    }
+
+    
+}
