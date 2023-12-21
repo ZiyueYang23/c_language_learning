@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS 1
 
 目录：
     {
@@ -1063,6 +1063,8 @@
 
 11.字符串函数合集 //@ <string.h>
 {
+    //！如果记不清，可以通过c++的网站来查找
+
     { //@ strlen
       // 首先这是一个计算字符串长度的库函数包含在<string.h>之中
       // ！ size_t strlen ( const char * str );
@@ -1155,6 +1157,21 @@
       // strcat(arr1,"world!");
       // 就相当于把先把arr1的destination的指针移到了这个字符串的'\0'处，然后再进行strcpy，
       // 需要注意的点就是数组大小你要控制好，别超了。
+        /* strcat example */
+        #include <stdio.h>
+        #include <string.h>
+
+        int main()
+        {
+            char str[80];
+            strcpy(str, "these ");
+            strcat(str, "strings ");
+            strcat(str, "are ");
+            strcat(str, "concatenated.");
+            puts(str);
+            return 0;
+        }
+
     }
 
     { //@ strcmp
@@ -1163,20 +1180,390 @@
       //1.一个一个比较“abc”，“abcd”就是第一个小于第二个，一个一个比较，如果是相等就往后移。
       //2.返回值如果比较到了一对字符出现了差别就会判断，大于就会返回一个大于0的值，小于就会返回一个小于0的值
       //3.如果比比比到最后都相等就返回一个0
+        #include <stdio.h>
+        #include <string.h>
+
+        int main()
+        {
+            char key[] = "apple";
+            char buffer[80];
+            do
+            {
+                printf("Guess my favorite fruit? ");
+                fflush(stdout);
+                scanf("%79s", buffer);
+            } while (strcmp(key, buffer) != 0);
+            puts("Correct answer!");
+            return 0;
+        }
     }
 
     { //@ strn...
-      // ！int strncmp(const char *str1, const char *str2, size_t num);
-      // ！char * strncpy ( char * destination, const char * source, size_t num );
-      // ！char * strncat ( char * destination, const char * source, size_t num );
-      // 上面都是标准声明，就是后面加一个无符号整数，cmp就是比几个，cat就是接几个，cpy就是拷贝几个
-      //~需要注意的地方是strncat这个东东有点特殊的就是，比如说strncat(“Hello\0xxxxxxx”,"world",3);
-      // 这个地方我直接放字符串方便但是应该放数组，当指针到\0的地方停开始接字符把wor接上去，w换\0，
-      // 然后会自动带一个\0在最后，要不然你数组都停不了
-      //~另外strncpy也存在这个问题就是strncpy("Helloxxxxx","world",8);不仅把world带过去
-      // 而且还会自动补\0也就是“world\0\0\0xx\0”，
-      //~如果是strncpy("Helloxxxxx","world",3);他不会补\0的直接就是“worlloxxxxx”;
+        // ！int strncmp(const char *str1, const char *str2, size_t num);
+        // ！char * strncpy ( char * destination, const char * source, size_t num );
+        // ！char * strncat ( char * destination, const char * source, size_t num );
+        // 上面都是标准声明，就是后面加一个无符号整数，cmp就是比几个，cat就是接几个，cpy就是拷贝几个
+        //~需要注意的地方是strncat这个东东有点特殊的就是，比如说strncat(“Hello\0xxxxxxx”,"world",3);
+        // 这个地方我直接放字符串方便但是应该放数组，当指针到\0的地方停开始接字符把wor接上去，w换\0，
+        // 然后会自动带一个\0在最后，要不然你数组都停不了
+        //~另外strncpy也存在这个问题就是strncpy("Helloxxxxx","world",8);不仅把world带过去
+        // 而且还会自动补\0也就是“world\0\0\0xx\0”，
+        //~如果是strncpy("Helloxxxxx","world",3);他不会补\0的直接就是“worlloxxxxx”;
     }
 
+    { //@ strstr
+        // 子字符查找功能;
+        // ！const char *strstr(const char *str1, const char *str2);
+        strstr("Hello ", "llo");
+        // 返回值如果找到了就是l的地址，如果没找到就返回一个NULL;
+        int main()
+        {
+            char str[] = "This is a simple string";
+            char *pch;
+            pch = strstr(str, "simple");
+            if (pch != NULL)
+                strncpy(pch, "sample", 6);
+            puts(str);
+            return 0;
+        }
+
+        //~难点是如何自己实现一个my_strstr函数;
+        //！等待
+    }
+
+    { //@ strtok
+        // 字符串拆分;
+        //！char *strtok(char *str, const char *delimiters);
+
+        /* strtok example */
+        #include <stdio.h>
+        #include <string.h>
+
+        int main()
+        {
+            char str[] = "- This, a sample string.";
+            char ret[100] = {0};
+            strcpy(ret, str);
+
+            char *pch = NUll;
+
+            printf("Splitting string \"%s\" into tokens:\n", str);
+
+            pch = strtok(str, " ,.-");   //！从这往下是精髓是需要细细体会的
+            while (pch != NULL)
+            {
+                printf("%s\n", pch);
+                pch = strtok(NULL, " ,.-");
+            }
+            return 0;
+        }
+        //~ 需要注意的点 
+        //1.前面放你要拆分的字符串，后面放要拆分的标识符（可以不讲顺序），它会扫描，自动将标识符替换成\0、
+        //2.这个函数是要多次调用的而且它具有记忆功能，第一次需要你穿字符串严谨点说是字符数组的指针进去，往后就传NULL即可，所以要用这个函数
+        //就要配套循环一开始给地址，然后循环自动给NULL，多次分段拆分输出，直到到结尾，结束。
+        //！3.并且要注意的是，用这个函数之前需要保护，因为他会替换你字符数组里面的内容，你需要提前给复制一份以保护你原字符数组不被改动
+        //再创建一个字符数组然后用strcpy（new，old）；拷贝一份。
+
+    }
+
+    { //@ strerror
+        //~首先要注意的是用这个还要包含一个头文件<errno.h>;
+        // ！char * strerror ( int errnum );
+        /* strtok example */
+        #include <stdio.h>
+        #include <string.h>
+
+        int main()
+        {
+            char str[] = "- This, a sample string.";
+            char *pch;
+            printf("Splitting string \"%s\" into tokens:\n", str);
+            pch = strtok(str, " ,.-");
+            while (pch != NULL)
+            {
+                printf("%s\n", pch);
+                pch = strtok(NULL, " ,.-");
+            }
+            return 0;
+        }
+
+        // 还没学文件所以这个还不太理解
+    }
+
+    //！#include <ctype.h> 
     
+    { //@ is...
+        // ！以issapce为例其他的以此类推
+        /* isspace example */
+        #include <stdio.h>
+        #include <ctype.h>
+
+        int main()
+        {
+            char c;
+            int i = 0;
+            char str[] = "Example sentence to test isspace\n";
+
+            while (str[i])
+            {
+                c = str[i];
+                if (isspace(c))
+                    c = '\n';
+                putchar(c);
+                i++;
+            }
+
+            return 0;
+        }
+        // 这个函数也实现了把这个拆分换行输出，就是检测到是就替换成\n
+        //！ 如果符合条件就返回真;
+        //~ iscntrl 任何控制字符
+        //~ issapace 任何空白字符
+        //~ isdigit 十进制数字0-9
+        //~ isxdigit 十六进制数字
+        //~ islower 小写字母
+        //~ isupper 大写字母
+        //~ isalpha 字母
+        //~ isalnum 字母或数字
+        //~ ispunct 标点符号
+        //~ isgraph 任何图形字符
+        //~ isprint 任何可打印字符
+    }
+
+    { //@ tolower & toupper
+
+    //！int toupper ( int c );
+    //！int tolower ( int c );
+
+        /* toupper example */
+        #include <stdio.h>
+        #include <ctype.h> //！
+        int main()
+        {
+            int i = 0;
+            char str[] = "Test String.\n";
+            char c;
+            while (str[i])
+            {
+                c = str[i];
+                putchar(toupper(c));
+                i++;
+            }
+            return 0;
+        }
+        //~ 字面上很容易理解就是大转小，小转大
+        //~ 需要注意的就是传进去的是 int 型，是把字符转化为ASCII即整型数字传进去的
+        //！ 在c语言编程中，字符是以整型形式存储的，当字符作为参数传递进入函数时，传递该字符对应的ASCII码值而不是字符本身。
+    }
+
 }
+
+
+12.内存函数
+{
+    //！等待完成
+    //memcmp
+    //memmove
+    //memset
+    //memcpy
+}
+
+
+13.自定义类型-结构体-枚举-联合
+{
+    {//@ 结构体
+        //~ 1.0初探结构体
+        {
+            #include <stdio.h>
+
+            struct score
+            {
+                int math;
+                int chinese;
+                int english;
+                // } s; //定义方式之一，此时是全局变量
+            };
+
+            struct Student
+            {
+                char name[20];
+                int age;
+
+                struct score s; // ！注意你要给个名字，就相当于在这个地方给了s的定义
+            };
+
+            int main()
+            {
+                struct Student Yzy = {"Yang Ziyue", 18, {100, 100, 100}}; // 定义方式之二，是局部变量
+                // struct score s;
+
+                printf("%s %d %d %d %d", Yzy.name, Yzy.age, Yzy.s.math, Yzy.s.chinese, Yzy.s.english);
+
+                return 0;
+            }
+
+            // 声明定义初始化使用嵌套上述代码完成展示
+            // ！ 对于一种特殊的结构体声明就是不给名字，这种只能用一次，在声明的同时完成定义，然后可以使用它。
+        }
+
+        //~ 2.0结构体内存对齐
+        {
+            //我们定义几种结构体
+            #include <stdio.h>
+
+            struct str1
+            {
+                char a;
+                int b;
+                char c;
+            } s1;
+
+            struct str2
+            {
+                char a;
+                char c;
+                int b;
+            } s2;
+
+            struct str3
+            {
+                char a;
+                double c;
+                int b;
+            } s3;
+
+            struct str4
+            {
+                struct str3 s3;
+                double c;
+                int b;
+            } s4;
+
+            // 请问上述结构体在内存里占用多少内存？？
+
+            int main()
+            {
+                printf("%d\n", sizeof(s1));
+                // 输出结果是12
+                printf("%d\n", sizeof(s2));
+                // 输出结果是8
+                printf("%d\n", sizeof(s3));
+                // 输出结果是24
+                printf("%d\n", sizeof(s4));
+                // 输出结果是40
+
+                return 0;
+            }
+// 思考为何这个地方不是单纯的直接相加就行了呢？？
+// 又是怎么算的呢？
+
+//@ 一共有四个规则
+
+//~ 1.0首先他会要一块内存，然后从偏移量为0的地方开始放一个元素，偏移量就类似于它把他放内存的起始点设为零，其余地方就叫偏移，偏移了多少就是偏移量
+//~ 第一个元素从0偏移量开始。
+//~ 接下来每一个元素都需要进行处理，有一个叫对齐数的定义，vs默认值是8，每一个元素有几个字节就是多少对齐数，规则就是与默认值比较用最小值
+
+//~ 2.0选出最小值就需要进行下一步规则，第一个元素从偏移量为0的内存块放值，下一个元素必须从其处理出的对齐数的整数倍数位置开始再放
+// 解释一下，比如s1，char字节就是1和8比较1更小就用一把占用一个字节，把偏移量为0的那一块内存占用，之后从偏移量为1的内存块开始数，由于是
+// int型，字节数是4，和8比4更小，但是按照规则需要放在偏移量为4或4的倍数位置的内存块开始放，也就是说偏移量为1，2，3这三个字节的内存块不放值
+// 知道偏移量为4的这一个内存块开始放值，占四个字节就是用到偏移量为7的内存块，然后到第三个元素就是char按理说用一个字节就行，也不需要跳过
+// 但是为啥是12呢，按照上面的算法应该是9呀？？？，为何是九你从偏移量为0的地方算起占到第八块一共就是九个字节
+
+//~ 3.0这就需要规则三，最后需要判断整个结构体占有的内存必须是整个结构体中所使用的最大对齐数的整数倍，所以需要往后扩展是三个字节到偏移量为11
+//~ 这个内存块，一共就是12个字节
+// 同理判断s2s3，s2 0 1 4，分别从这几个偏移量位置开始放值最后放到偏移量为7的（放了），一共正好是8字节是4的倍数就不会往后扩
+// s3 0 8 16 放完int到偏移量为19的位置也就是20个字节，不是最大对齐数8的倍数往后扩展到24
+
+//~ 4.0嵌套结构体怎么算呢，要用到规则四，s3占了24字节还是要用24个字节，就是说到了如何处理结构体对齐数？规则就是按照你所嵌套的结构体的最大
+//~ 对齐数与默认值比较，从0开始放放到偏移量为23的位置正好double是8，从24开始放放到31，正好又从32开始放int放到35，一共是36个字节。
+
+//~ 4.1最后判断是否扩展的时候，嵌套的结构体也是按照其之中的最大对齐数与现在的结构体的所有元素相比较，选出最大对齐数，然后判断倍数
+// 36不是8的倍数，自动扩展到40，即40个字节
+
+// ！那么问题来了为何要这么做呢？学会算之后思考为何要这样设计呢？？
+
+//~理论说法
+// 1.0平台原因（移植原因）
+// 不是所有的硬件平台都能访问任意地址上的任意数据的；某些硬件平台只能在某些地址处去取某些特定类型的数据，否则会抛出硬件异常；
+
+// 2.0性能原因
+// 数据结构尤其是栈应尽可能的在自然边界上对齐，原因在于为了访问未对齐的内存，处理器需要作两次内存访问，而对齐的内存访问仅需要一次访问。
+
+//~个人理解
+// 所谓对齐你仔细体会，这个规则的制订就是尽可能的划分好块以免出现读一半需要再读一遍的情况，它是牺牲内存换取时间的行为。
+
+
+//！所以为了提高内存利用率，可以把小的如char放在一起放在前面，可以稍微减少一点内存呢浪费
+       }
+
+        //~ 3.0结构体传参
+        {
+            #include <stdio.h>
+
+            struct str1
+            {
+                int arr1[100];
+                int a;
+            };
+
+            struct str2
+            {
+                int arr1[100];
+                int a;
+            };
+
+            void print1(struct str1 s1, int num);  // ！注意要把结构体放在最前面，要不然你后面调用函数函数里面不知的结构体的名字
+            void print2(struct str2 * p, int num); // ！结构体指针的效率要高于直接传一个大结构体过去
+
+            int main()
+            {
+                struct str1 s1 = {{
+                                      1,
+                                      2,
+                                      3,
+                                      4,
+                                      5,
+                                  },
+                                  991};
+
+                struct str2 s2 = {{
+                                      2,
+                                      3,
+                                      3,
+                                      4,
+                                      5,
+                                  },
+                                  919};
+
+                print1(s1, 10);
+                print2(&s2, 10); //~另外说一句这个是真爽vscode，插件给你显示的清清楚楚哈哈哈哈
+
+                return 0;
+            }
+
+            void print1(struct str1 s1, int num)
+            {
+                for (int i = 0; i < num; i++)
+                {
+                    printf("%d ", s1.arr1[i]);
+                }
+                printf("%d \n", s1.a);
+            }
+
+            void print2(struct str2 * p, int num)
+            {
+                for (int i = 0; i < num; i++)
+                {
+                    printf("%d ", p->arr1[i]); //~结构体指针p指向结构体s2，用箭头->来访问
+                }
+                printf("%d \n", p->a);
+            }
+        }
+    
+    
+    
+    
+    }
+}
+
+

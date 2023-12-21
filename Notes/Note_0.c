@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS 1
 // 目的是帮助自己记忆一些常用常见的必要代码，务必时常巩固复习
 
 目录：
