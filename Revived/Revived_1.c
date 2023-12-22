@@ -1095,51 +1095,51 @@
 //     return 0;
 // }
 
-// #include <stdio.h>
+#include <stdio.h>
 
-// struct str1
-// {
-//     char a;
-//     int b;
-//     char c;
-// }s1;
+struct str1
+{
+    char a;
+    int b;
+    char c;
+}s1;
 
-// struct str2
-// {
-//     char a;
-//     char c;
-//     int b;
-// }s2;
+struct str2
+{
+    char a;
+    char c;
+    int b;
+}s2;
 
-// struct str3
-// {
-//     char a;
-//     double c;
-//     int b;
-// } s3;
+struct str3
+{
+    char a;
+    double c;
+    int b;
+} s3;
 
-// struct str4
-// {
-//     struct str3 s3;
-//     double c;
-//     int b;
-// } s4;
+struct str4
+{
+    struct str3 s3;
+    double c;
+    int b;
+} s4;
 
-// //请问上述结构体在内存里占用多少内存？？
+//请问上述结构体在内存里占用多少内存？？
 
-// int main()
-// {
-//     printf("%d\n", sizeof(s1));
-//     //输出结果是12
-//     printf("%d\n", sizeof(s2));
-//     //输出结果是8
-//     printf("%d\n", sizeof(s3));
-//     //输出结果是24
-//     printf("%d\n", sizeof(s4));
-//     //输出结果是40
+int main()
+{
+    printf("%d\n", sizeof(s1));
+    //输出结果是12
+    printf("%d\n", sizeof(s2));
+    //输出结果是8
+    printf("%d\n", sizeof(s3));
+    //输出结果是24
+    printf("%d\n", sizeof(s4));
+    //输出结果是40
 
-//     return 0;
-// }
+    return 0;
+}
 //     //思考为何这个地方不是单纯的直接相加就行了呢？？
 //     //又是怎么算的呢？
 //     //@ 一共有四个规则
@@ -1231,3 +1231,12 @@
 //     }
 //     printf("%d \n", p->a);
 // }
+
+//董小姐 莉莉安 安河桥 郭源潮 斑马斑马 鸽子 关忆北 空港曲 六层楼
+//飞去南方只是为了回家明天太远今天太短，给得了未来，他们在别有用心的生活里偏偏舞蹈，长生不老，
+//我的余生却再也没有北方
+//听会我喜欢的歌有何不可呢？？？我又梦见你还站在门口一脸羞涩的表情，你说这么多年，你可知道你的名字解释了我的一生，我的余生却再也没有北方
+//你知道你的名字解释了我的一生。
+//戏子与警察又念起诗篇，你我登船，高堂，咸鱼牛马杀人刀，月色不过对影三人，忘记真相但愿。
+//可春色啊宛若江南岸，垂死与度量，忘记真相但愿病重的医生
+//但愿谁都不在意
