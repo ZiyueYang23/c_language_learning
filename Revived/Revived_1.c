@@ -1095,51 +1095,51 @@
 //     return 0;
 // }
 
-#include <stdio.h>
+// #include <stdio.h>
 
-struct str1
-{
-    char a;
-    int b;
-    char c;
-}s1;
+// struct str1
+// {
+//     char a;
+//     int b;
+//     char c;
+// }s1;
 
-struct str2
-{
-    char a;
-    char c;
-    int b;
-}s2;
+// struct str2
+// {
+//     char a;
+//     char c;
+//     int b;
+// }s2;
 
-struct str3
-{
-    char a;
-    double c;
-    int b;
-} s3;
+// struct str3
+// {
+//     char a;
+//     double c;
+//     int b;
+// } s3;
 
-struct str4
-{
-    struct str3 s3;
-    double c;
-    int b;
-} s4;
+// struct str4
+// {
+//     struct str3 s3;
+//     double c;
+//     int b;
+// } s4;
 
-//请问上述结构体在内存里占用多少内存？？
+// //请问上述结构体在内存里占用多少内存？？
 
-int main()
-{
-    printf("%d\n", sizeof(s1));
-    //输出结果是12
-    printf("%d\n", sizeof(s2));
-    //输出结果是8
-    printf("%d\n", sizeof(s3));
-    //输出结果是24
-    printf("%d\n", sizeof(s4));
-    //输出结果是40
+// int main()
+// {
+//     printf("%d\n", sizeof(s1));
+//     //输出结果是12
+//     printf("%d\n", sizeof(s2));
+//     //输出结果是8
+//     printf("%d\n", sizeof(s3));
+//     //输出结果是24
+//     printf("%d\n", sizeof(s4));
+//     //输出结果是40
 
-    return 0;
-}
+//     return 0;
+// }
 //     //思考为何这个地方不是单纯的直接相加就行了呢？？
 //     //又是怎么算的呢？
 //     //@ 一共有四个规则
@@ -1240,3 +1240,70 @@ int main()
 //戏子与警察又念起诗篇，你我登船，高堂，咸鱼牛马杀人刀，月色不过对影三人，忘记真相但愿。
 //可春色啊宛若江南岸，垂死与度量，忘记真相但愿病重的医生
 //但愿谁都不在意
+
+//枚举
+//就是把生活中可以列举，递增的量来具体化
+// #include <stdio.h>
+// enum Day
+// {
+//   ,  
+// }
+// int main()
+// {
+
+//     return 0;
+// }
+
+//枚举enum
+
+//联合叫共用体更为贴切 union
+//联合也存在对齐，联合是共用
+//创建出来就是共用的单一使用，用法和结构体类似，自定义类型有类型名有自身定义的名字，有元素变量名也用union.a
+//存放地址是小端存放，从低地址到高地址
+
+//动态内存管理
+//四个函数
+//malloc
+//stdlib.h
+//calloc//两个参数会初始化
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <assert.h>
+
+int main()
+{
+    int *p = NULL;
+    int *ptr = NULL;
+    ptr = (int*)realloc(p, 40);
+    if(ptr!=NULL)
+    {
+        p = ptr;
+    }
+    // if(p==NULL)
+    // {
+    //     printf("%s", strerror(errno));
+    //     // return 1;
+    //     exit(1);//?
+    // }
+    ptr=(int*)realloc(p, 8000);
+    if(ptr != NULL)
+    {
+        p = ptr;
+    }
+    for (int i = 0; i < 10;i++)
+    {
+        p[i] = i;
+    }
+    for (int i = 0; i < 10;i++)
+    {
+        printf("%d ", p[i]);
+    }
+    free(p);
+    p = NULL;
+    ptr = NULL;
+
+    return 0;
+}
