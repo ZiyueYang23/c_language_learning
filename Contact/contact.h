@@ -16,7 +16,6 @@
 #define STA_NUM 5
 #define ADD_NUM 5
 
-
 typedef struct pInformation
 {
     char name[MAX_NAME];
@@ -26,25 +25,25 @@ typedef struct pInformation
     char addr[MAX_ADDR];
 } pInformation;
 
-//动态版本
+// 动态版本
 typedef struct contacts
 {
     pInformation *data; // ！这个地方错了一次
     int counter;
-    int capacity;//记录容量
+    int capacity; // 记录容量
 } contacts;
 
-//静态版本
-// typedef struct contacts
-// {
-//     pInformation data[PEOPLE]; // ！这个地方错了一次
-//     int counter;
-// } contacts;
+// 静态版本
+//  typedef struct contacts
+//  {
+//      pInformation data[PEOPLE]; // ！这个地方错了一次
+//      int counter;
+//  } contacts;
 
 void menu(void);
 // 初始化结构体
 int initContact(contacts *ps);
-//释放
+// 释放
 void DestroyContact(contacts *ps);
 // 显示
 void show(const contacts *ps);

@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS 1
 #include "contact.h"
 
 void menu(void)
@@ -9,33 +10,36 @@ void menu(void)
     printf("*******   0.exit  9.back   *******\n");
     printf("**********************************\n");
 }
-//动态版本
-int initContact(contacts *ps) //改成int需要想想
+// 动态版本
+int initContact(contacts *ps) // 改成int需要想想
 {
     assert(ps != NULL);
 
     ps->counter = 0;
-    ps->data=(pInformation*)calloc(STA_NUM, sizeof(pInformation));
-    if(ps->data==NULL)
+    ps->data = (pInformation *)calloc(STA_NUM, sizeof(pInformation));
+    // 这是指针承载创建内存的首地址
+    // 由于data是指向结构体的指针，所以强转成pInformation*型，让系统知道内存咋划分成块。
+    if (ps->data == NULL) // 要保证不是空指针否则不能用
     {
         printf("pInformation::%s", strerror(errno));
         return 1;
     }
-    ps->capacity = STA_NUM;
+    ps->capacity = STA_NUM; // 这个是精髓，创造一个容量，当容量和数量相等的时候就扩容
     return 0;
 }
-//静态版本
-// void initContact(contacts *ps)
-// {
-//     assert(ps != NULL);
+// 静态版本
+//  void initContact(contacts *ps)
+//  {
+//      assert(ps != NULL);
 
 //     ps->counter = 0;
 //     memset(ps->data, 0, sizeof(ps->data)); // ！细细体会这个地方看鹏哥的
 // }
 
-void DestroyContact(contacts *ps)
+void DestroyContact(contacts *ps) // 有借有还
 {
     assert(ps);
+
     free(ps->data);
     ps->data = NULL;
 }
@@ -43,10 +47,13 @@ void DestroyContact(contacts *ps)
 void add(contacts *ps)
 {
     assert(ps != NULL);
-    if(ps->capacity==ps->counter)
+
+    if (ps->capacity == ps->counter)
     {
-        pInformation *ptr = (pInformation *)realloc(ps->data, ADD_NUM * sizeof(pInformation));//~细细体会
-        if(ptr==NULL)
+        pInformation *ptr = (pInformation *)realloc(ps->data, (ps->capacity+ADD_NUM)* sizeof(pInformation));
+        //~细细体会
+        // 这个地方其实可以直接用ps->data但是打好基础养好习惯现在是项目小内存小，不需要考虑内存问题，以后就不一定了
+        if (ptr == NULL)
         {
             printf("add::%s", strerror(errno));
             return;
@@ -83,10 +90,10 @@ void add(contacts *ps)
         ps->counter++;
     }
 }
-//静态版本
-// void add(contacts *ps)
-// {
-//     assert(ps != NULL);
+// 静态版本
+//  void add(contacts *ps)
+//  {
+//      assert(ps != NULL);
 
 //     if (ps->counter == PEOPLE) // ！没想严密
 //     {
@@ -143,6 +150,7 @@ void del(contacts *ps)
     char ret[20] = {0};
     int flag = 1;
     int a = 0;
+    int b = 0;
 
     printf("请输入想要删除的人的名字:>");
     scanf("%s", ret);
@@ -162,13 +170,20 @@ void del(contacts *ps)
         //     printf("请输入想要删除的人的序号:>");
         //     scanf("%d", &a);
         // }//这里想做一个就一个的话自动删如果大于1选择
-        printf("请输入想要删除的人的序号:>");
-        scanf("%d", &a);
+        do
+        {
+            printf("请输入想要删除的人的序号:>");
+            scanf("%d", &a);
+            printf("*<   0.back    1.continue  >*");
+            scanf("%d", &b);
+        } while (b == 0);
+
         for (int i = a; i < ps->counter; i++)
         {
             ps->data[i - 1] = ps->data[i];
         }
         ps->counter--; // ！有bug就是你输入了不是这里面的数字也会误删
+        // 目前想到的就只能做一个回退，还不错
         printf("删除成功\n");
     }
 }
@@ -255,10 +270,12 @@ void edi(contacts *ps)
 
     int a = 0;
     int b = 0;
+    int c = 0;
+    int d = 0;
     char arr2[20] = {0};
 
     printf("请输入你需要更改信息的人的名字:>");
-    scanf("%s", arr2); // ！返回功能
+    scanf("%s", arr2);
 
     if (0 == strcmp(arr2, "9"))
     {
@@ -275,8 +292,21 @@ void edi(contacts *ps)
     //     scanf("%d", &a);
     // } //想做一个如果只有一个就直接自动改
     out:
-        printf("请输入你需要更改信息的人的序号:>");
-        scanf("%d", &a); // ！这里也有bug，如果你输错了序号就是输入的是没显示的也会修改
+        // do
+        // {
+        //     printf("请输入你需要更改信息的人的序号   *< 0.back >*  :>");
+        //     scanf("%d", &a); // ！这里也有bug，如果你输错了序号就是输入的是没显示的也会修改
+        //     // 目前想到的就只能做一个回退
+        // } while (a == 0);
+
+        do
+        {
+            printf("请输入你需要更改信息的人的序号:>");
+            scanf("%d", &a); // ！这里也有bug，如果你输错了序号就是输入的是没显示的也会修改
+            // 目前能想到的办法，还凑合
+            printf("*<   0.back    1.continue  >*");
+            scanf("%d", &d);
+        } while (d == 0);
         do
         {
             printf("*******************************\n");
@@ -334,7 +364,7 @@ void edi(contacts *ps)
             case 4:
             {
                 char temp[MAX_TELE] = {0, [MAX_TELE - 1] = '\0'};
-                printf("请输入ta更改后的性别:>");
+                printf("请输入ta更改后的电话:>");
                 scanf("%s", temp);
 
                 strcpy(ps->data[a - 1].tele, temp);
@@ -370,7 +400,12 @@ void edi(contacts *ps)
                 printf("请重新输入你需要更改的信息序号\n");
             }
             }
-        } while (b >= 5 || b <= 0);
+            if (b >= 0 && b <= 5)
+            {
+                printf("是否还需要更改该人的其他信息  *<  0.不需要，请退出   1.需要请继续   >*  :>");
+                scanf("%d", &c);
+            }
+        } while (c == 1 || b >= 6 || b <= 0);
     }
 }
 

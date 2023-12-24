@@ -1577,6 +1577,7 @@
     }
 
     { //@ 位段
+
         struct A
         {
             int _a : 2; //4byte 32bit
@@ -1594,6 +1595,7 @@
             如何理解3＋4就是7开辟一个字节，然后到5，试问是浪费那一个bit再开辟一个新的装c还是直接用那个bit然后在开辟一个新字节装剩下四个bit然后正好装下d四个bit（一共正好两个字节）还是说一共需要开辟三个字节浪费部分bit呢？
             //在vs上编译的结果是3字节，也就说明是会浪费部分空间
         }
+
         //@ 位段内存分配
 
         //~1.0
@@ -1630,8 +1632,8 @@
 }
 
 
-15.C语言命名规范--时常回顾形成正确良好的风格
-{
+15.C语言命名规范
+{//！时常回顾复习，规范代码。
     { //@常用标识符命名风格
         // 1、unix like风格：单词用小写字母，每个单词直接用下划线‘_’分割，例如：text_mutex, kernerl_text_address。
 
@@ -1669,6 +1671,7 @@
             //好的命名 这里是Lunix的风格你换成小驼峰就行，主要是内容
             int error_number;
             int number_of_completed_connection;
+
             //不好的
             int n;
             int nerr;
@@ -1837,9 +1840,9 @@
     } Student;//定义大驼峰
 
     //@ 联合体一般用U开头，如:
-    union LPoint
+    union LPoint //大驼峰
     {
-        int lX;
+        int lX;//小驼峰
         int lY;
     }
 
@@ -1880,7 +1883,7 @@
     //文件名的命名要求表达出文件的内容，要求文件名的长度不得少于5个字母，严禁使用象file1,myfile之类的文件名。
 
     // 说明：因为不同操作系统对文件名大小写处理会不同（如MS的DOS、Windows系统不区分大小写，但是Linux系统则区分）
-    //所以代码文件命名建议统一采用全小写字母命名。多个单词之间使用下划线‘_’分隔。
+    //~ 所以代码文件命名建议统一采用全小写字母命名。多个单词之间使用下划线‘_’分隔。
 }
 
 
@@ -2048,7 +2051,441 @@
             ptr = NULL;
 
             return 0;
+
+            //！注意是重新分配大小不是直接加，需要给运算符达到自加的目的
         }
     }
 
+    {//@ free
+        //就需要注意一个点,如果传进去一个NULL就相当于什么都没做.
+    }
+
+    {//@ 内存分配的常见问题
+
+        { //~1.0对NULL指针的解引用操作
+
+            #include <stdio.h>
+            #include <string.h>
+            #include <stdlib.h>
+            #include <errno.h>
+            int main()
+            {
+                int *p = (int *)malloc(100);
+                *p = 20;
+
+                free(p);
+                p = NULL;
+                return 0;
+            }
+            // 上述代码有无问题
+            //小内存看似没啥问题，但是作为打基础和养成好习惯的话，你需要考虑一个问题就是，如果内存申请失败，会返回空指针，然后你后续对空指针进行解引用就会出问题，所以，养成良好的习惯，加一个判断语句。
+            #include <stdio.h>
+            #include <string.h>
+            #include <stdlib.h>
+            #include <errno.h>
+
+            int main()
+            {
+                int *p = (int *)malloc(100);
+                if(p==NULL)
+                {
+                    printf("%s", strerror(errno));
+                    return 1;
+                    // 还有一种方式就是用exit(1);
+                    // 也可以达到效果
+                }
+                *p = 20;
+
+                free(p);
+                p = NULL;
+                return 0;
+            }
+            //这就稍微可以避免问题的发生，但是违反了单一出口的这一个原则，而且会产生不小心内存泄漏的问题后面再说
+        }
+
+        { //~2.0对动态开辟的空间进行越界访问
+            #include <stdio.h>
+            #include <stdlib.h>
+            #include <string.h>
+            #include <errno.h>
+            #include <assert.h>
+
+            int main(void)
+            {
+                int *p = (int *)malloc(100);
+                if(p==NULL)
+                {
+                    printf("%s", strerror(errno));
+                    return 1;
+                }
+
+                for (int i = 0; i <= 100;i++)
+                {
+                    p[i] = i;
+                }
+                //最多到99你访问到了100
+
+                free(p);
+                p = NULL;
+                return 0;
+            }
+        }
+    
+        { //~3.0对非动态开辟区内存使用free释放
+            int main()
+            {
+                int a = 10;
+                int *p = &a;
+
+                free(p); //！err
+                p = NULL; 
+
+                return 0;
+            }
+        }
+    
+        { //~4.0使用free释放一块动态开辟内存的一部分
+            int main()
+            {
+                int *p = (int *)malloc(100);
+                // if...
+
+                for(int i=0;i<10;i++)
+                {
+                    *p = i;
+                    p++;
+                }
+
+                free(p);//！err
+                p = NULL;
+            }
+            //注意这个地方，你动了p指针，free的时候直接传p的现在的地址进去了，在这个地方p已经越界指向了下一块内存了free显然错误
+            //~但是如果说指向你申请的内存这一块的某一部分行不行呢？？
+            //答案是不行的，free必须传你申请的动态内存首地址，有借有还，你还一半也不太合适。
+            //有两种解决办法，1.在创建一个指针来存放首地址，治标
+            //~2.治本就是不动p用下标[]，或者用*（p+i），来解引用，这样p是不动的。
+        }
+    
+        { //~5.0对同一块内存进行多次释放
+            //都省略了头文件
+            int main()
+            {
+                int *p = (int *)calloc(10, sizeof(int));
+                // if...
+                //用calloc就直接帮你初始化
+                //尝试用多种方式去申请内存和使用
+                free(p);
+                //...
+                //有写了很多代码给忘了又把p给释放一次
+
+                free(p);
+                //这就会出问题，p仍存着地址。
+                //解决这个问题，正好也养成好习惯就在free之后就p=NULL；这样即使你后面再次的释放p它指向NULL，NULL传给free函数就等于啥都没干。
+                return 0;
+            }
+        }
+    
+        { //~6.0动态开辟内存忘记释放（在函数中常见）
+            //！情况一
+            #include <stdlib.h>
+            #include <stdio.h>
+            #include <string.h>
+            #include <errno.h>
+
+            void test(void)
+            {
+                int *ptr = NULL;
+                ptr = (int *)realloc(ptr, 100);
+                if(ptr==NULL)
+                {
+                    printf("%s", strerror(errno));
+
+                    return;
+                }
+                else
+                {
+                    p = ptr;
+                }
+
+                int flag = 0;
+                scanf("%d", &flag);
+                if(flag==5)
+                {
+                    return;
+                }
+
+                free(p);
+                p = NULL;
+            }
+            int main()
+            {
+                test();
+                return 0;
+            }
+
+            //上述代码的问题就是不是单一出口，如果说你上面的flag==5就返回了，而没有内存释放就导致内存泄漏，这种比较隐秘。
+
+            //！情况二
+            #include <stdlib.h>
+            #include <stdio.h>
+            #include <string.h>
+            #include <errno.h>
+
+            int *test(void)
+            {
+                int *ptr = NULL;
+                ptr = (int *)realloc(ptr, 100);
+                if(ptr==NULL)
+                {
+                    printf("%s", strerror(errno));
+
+                    return;
+                }
+                else
+                {
+                    p = ptr;
+                }
+                return p;
+            }
+            int main()
+            {
+                int *s = NULL;
+                test();
+
+                //你以为上面的函数里面又内存释放的功能，结果忘记释放
+                return 0;
+            }
+        }
+    
+        { //~经典笔试题
+            #include <stdio.h>
+            #include <stdlib.h>
+            #include <errno.h>
+            #include <string.h>
+
+            void GetMemory(char *p)
+            {
+                p = (char *)malloc(100);
+            }
+            void Test(void)
+            {
+                char *str = NULL;
+                GetMemory(str);
+                strcpy(str, "hello world!");
+                printf(str); //！妙
+            }
+            int main()
+            {
+                Test();
+                return 0;
+            }
+            //仔细思考思考
+            //首先内存泄漏主函数和GetMemory函数都没有free，并且注意到你str==NULL进去之后是创建了100字节的空间，p指向这个动态内存空间，但是你str的地址并没有改变，空指针进创建了一个临时指针变量p，放申请的内存地址但是呢，这个函数运行完结束后p消失，而str值并没有改变，NULL进strcpy函数，就导致程序运行失败。那块申请的内存并没有消失，也没有被释放，导致了内存泄漏，而且更重要的是，那块空间你在主函数还释放不了，地址没了，p消失了但是内存还在那里，并且你后续也修改释放不了。
+
+            //解决办法
+            //~1.二级指针
+            //你要改str的值那么好，我就把str这个指针变量的地址传进去让p接收地址解引用就可以改str的值了
+            #include <stdio.h>
+            #include <stdlib.h>
+            #include <errno.h>
+            #include <string.h>
+
+            void GetMemory(char **p)//二级指针
+            {
+                *p = (char *)malloc(100);
+                //*p就是str，把地址给了str
+            }
+            void Test(void)
+            {
+                char *str = NULL;
+                GetMemory(&str);//传地址进去
+                strcpy(str, "hello world!");
+                printf(str); //！妙
+                free(str);
+                str = NULL;
+            }
+            int main()
+            {
+                Test();
+                return 0;
+            }
+            
+            //~2.改函数类型
+            //要改str的值直接返回地址不就行了
+            #include <stdio.h>
+            #include <stdlib.h>
+            #include <errno.h>
+            #include <string.h>
+
+            int* GetMemory()
+            {
+                char *p = (char *)malloc(100);
+                return p;
+            }
+            void Test(void)
+            {
+                char *str = NULL;
+                str = GetMemory();
+                strcpy(str, "hello world!");
+                printf(str); //！妙
+                free(str);
+                str = NULL;
+            }
+            int main()
+            {
+                Test();
+                return 0;
+            }
+            //几个点要注意
+            //1.返回值int*直接返回p的地址让str直接指向那块内存
+            //2.不需要再传str进去了，函数就帮你申请一块，然后再通过return的形式把地址给你传回来。
+
+            //！注意到printf（str）这个东东
+            // ~这个玩意没错，怎么理解？
+            int main()
+            {
+                char *a = "Hello World";
+                //指针存放字符串首地址
+                printf("Hello World!");
+                //这个是先创建了一个字符串，然后把首地址给printf，它接收首地址帮你打印出来
+                printf("%s", "Hello World");
+                //同样这里“Hello World”代表的是该字符串的首地址而不是这整个字符串。
+                printf(a);
+                //同样的a中存放了字符串的首地址，直接把字符串首地址给printf就可以完成打印
+                printf("%s", a);
+                //当然这样也没问题
+            }
+            
+        }
+    }
+}
+
+
+20.柔性数组
+{
+    #include <stdio.h>
+
+    // 柔性数组
+    struct s
+    {
+        int n;
+        int arr[];
+    };
+
+    struct ss
+    {
+        int m;
+        int arr[0];
+    };
+
+    // 两种方式
+    // 前面必须有元素最后一个放数组，
+    // sizeof不算如柔性数组的值
+    // 怎么用，需要malloc函数
+    int main()
+    {
+        struct s *ps = (struct s *)malloc((sizeof(struct s) + 40));
+        if (ps == NULL)
+        {
+            return 1;
+        }
+        ps->n = 100;
+        for (int i = 0; i < 10; i++)
+        {
+            ps->arr[i] = i;
+        }
+        for (int i = 0; i < 10; i++)
+        {
+            printf("%d ", ps->arr[i]);
+        }
+        struct s *ptr = realloc(ps, (sizeof(struct s *) + 80));
+        if (ptr != NULL)
+        {
+            ps = ptr;
+            ptr = NULL;
+        }
+
+        // 然后就可以使用了，更大的空间柔性数组，动态内存管理
+
+        free(ps);
+        ps = NULL;
+        return 0;
+    }
+    // 必须是最后一个成员
+    // malloc次数越多内存碎片的可能性就越多，降低内存利用率
+    //知道的人少,用的人少,但是如果你会用,是不是你就牛逼了哈哈哈,就是相当于预设了一个数组但是不明确说明有几个元素,也因此是不占内存的,然后通过malloc方式申请堆区的动态内存,其后根据需要可以用realloc来更改,以达到柔性的目的,注意是堆区内存的性质,普通数组是放在栈区的.
+}
+
+
+// ！好的学习方式/方法.视频在右，编译器，笔记在左，边听边记，记重点记框架,自己下来再整理一遍又可以回顾一遍.多多重复,百炼成钢!!!
+21.文件
+{
+    //@ 文件打开函数fopen
+    FILE *fopen(const char *filename, const char *mode);
+    //标准声明
+    //返回值如果文件已成功打开，该函数将返回指向 FILE 对象的指针，该对象可用于在将来的操作中标识流。否则，将返回 NULL 指针.在大多数库实现中，errno 变量也被设置为失败时特定于系统的错误代码。
+    // 你要打开的文件要在那个代码的文件夹里面,如果说是需要用别的外面的文件,就需要你复制地址进去而且要注意转义字符两个//
+    //！注意这个地方，mode就是表示打开方式，"r"读，"w"写，"a"追加。
+    //读，就是读文件，把文件里的东西往外拿，是输入，是以计算机内存为中心的，把文件里面的东西往内存输入，对应如fscanf，输入到文件
+    //写，是写文件，就是把内存的东西往外输出，往文件里面放，对应如fprintf，输出到文件
+    //追加，就是往文件继续添加信息
+    //~特别要注意的是，当你用”w“是会先摧毁原来文件里面的内容，然后再重新输出到文件，所以要实现增加内容应该是”a“
+
+
+    //@ 文件关闭函数fclose
+    int fclose(FILE * stream);
+    // 标准声明
+    // 如果流成功关闭，则返回零值。失败时，返回 EOF。
+    // 注意要关闭文件，不关有可能丢信息
+
+    //~ 几个需要注意的点
+    //1. FILE*是一种指针,文件指针
+    //2. FILE是一个结构体 ，在编译器内部已经声明好了，用typedef定义的一种结构体类型，具体细节不需要我们管,
+    //   并且什么编译运行程序系统会自动产生一个文件信息区，来存放这个文件的信息。这个不需要太懂，了解即可会用就行。
+    //3. 这两个函数如同malloc与free两个函数一样配套出现,有借有还
+
+
+    //@ 新的报错方式
+    //~ perror()会自动帮你打印错误信息，比原来用的简单，里面可以放字符串 它相当于上述的结合体，即拿到错误信息又将它打印出来
+    //~ strerror(errno)只是单单拿到错误信息，而printf才是实现打印的功能,而且有点麻烦要包含好几个头文件
+
+    //@ 文件函数
+    //以fprintf为例
+    int fprintf(FILE * stream, const char *format, ...);
+    //~返回值
+    /*
+    成功后，将返回写入的字符总数。
+    如果发生写入错误，则设置错误指示符（ferror）并返回负数。
+    如果在写入宽字符时发生多字节字符编码错误，则将 errno 设置为 EILSEQ 并返回负数。
+    */
+
+    // 往文件里写是fprintf，就相当于打印在文件里，便于理解，信息从内存往外流进入文件叫输出
+    // 往文件外读是fscanf，就相当于不是从键盘里面读取信息，而是从文件里面读取信息。然后存到地址里 ，信息从文件进入到内存就叫，输入，以计算机为主体
+    // fgetc读单个字符 fputc写单个字符
+    // fgets读字符串  fputs写字符串
+    // fgets是从文件中读取信息，需要自己创建char数组来承载从文件中读到的信息
+    //第一个参数是字符数组型指针，第二个参数是读取的最大数（num）并且最后一位是\0，  没读完直接截断。 第三个参数就是文件指针
+    // 只有两个函数特殊,fread,二进制输入,fwrite,二进制输出.是只能对文件的.
+
+    //@ 对流的理解
+    // 从内存到外部设备，信息是如何传递的呢，中间存在一种东东叫流，作为一种中间传递的方式，因为外设很多，鼠标，键盘，光盘，u盘等等，为了说方便程序员输入输出，采用中间数据流的传递方式，要不然程序员每连接一种外设，就要学习一种输入输出方式。你把信息穿给流，底层逻辑自己会帮你传输信息给外设。
+
+    // 那么我们思考，为何你打开文件，从文件读取或者存入信息需要FILE*呢？？
+    // 而你从键盘读取信息，从屏幕输出信息没有 键盘*， 屏幕*呢？？？
+    // 是因为任何一个c语言程序会默认打开三个流
+    // 1.stdin-标准输入流对应键盘
+    // 2.stdout-标准输出流对应屏幕
+    // 3.stderr-标准错误流对应屏幕
+    // 而对应文件你没有默认打开的流帮助你传递信息，所以需要FILE*指针
+    //  注意到fprintf是适用于所有输出流的，那么我们思考能不能用fprintf把信息输出到屏幕上?
+    // 答案是当然可以，需要你把前面的文件指针换成stdout，类似于用标准输出流??,而你给文件指针,就是打开文件流.fscanf,fgets,fgetc等等都是适合所有流,也就是只要你想可以给任何外设进行输入和输出.
+
+    //~cpp网站上对fopen函数的解释也可以佐证上面
+    /*
+    打开其名称在参数 filename 中指定的文件，并将其与流相关联，该流可在将来的操作中通过返回的 FILE 指针进行标识。
+    允许对流执行的操作以及如何执行这些操作由 mode 参数定义。
+    默认情况下，如果已知返回的流不引用交互式设备，则该流将完全缓冲（请参阅 setbuf）。
+    可以通过调用 fclose 或 freopen 来取消返回的指针与文件的关联。所有打开的文件都会在正常程序终止时自动关闭。
+    运行环境支持至少同时打开FOPEN_MAX个文件。
+    */
 }
