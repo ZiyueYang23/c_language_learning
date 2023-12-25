@@ -2457,7 +2457,6 @@
     成功后，将返回写入的字符总数。
     如果发生写入错误，则设置错误指示符（ferror）并返回负数。
     如果在写入宽字符时发生多字节字符编码错误，则将 errno 设置为 EILSEQ 并返回负数。
-    */
 
     // 往文件里写是fprintf，就相当于打印在文件里，便于理解，信息从内存往外流进入文件叫输出
     // 往文件外读是fscanf，就相当于不是从键盘里面读取信息，而是从文件里面读取信息。然后存到地址里 ，信息从文件进入到内存就叫，输入，以计算机为主体
@@ -2466,19 +2465,26 @@
     // fgets是从文件中读取信息，需要自己创建char数组来承载从文件中读到的信息
     //第一个参数是字符数组型指针，第二个参数是读取的最大数（num）并且最后一位是\0，  没读完直接截断。 第三个参数就是文件指针
     // 只有两个函数特殊,fread,二进制输入,fwrite,二进制输出.是只能对文件的.
+    */
+
 
     //@ 对流的理解
-    // 从内存到外部设备，信息是如何传递的呢，中间存在一种东东叫流，作为一种中间传递的方式，因为外设很多，鼠标，键盘，光盘，u盘等等，为了说方便程序员输入输出，采用中间数据流的传递方式，要不然程序员每连接一种外设，就要学习一种输入输出方式。你把信息穿给流，底层逻辑自己会帮你传输信息给外设。
+    /* 
+    从内存到外部设备，信息是如何传递的呢，中间存在一种东东叫流，作为一种中间传递的方式，因为外设很多，鼠标，键盘，光盘，u盘等等，为了说方便程序员输入输出，采用中间数据流的传递方式，要不然程序员每连接一种外设，就要学习一种输入输出方式。你把信息穿给流，底层逻辑自己会帮你传输信息给外设。
 
-    // 那么我们思考，为何你打开文件，从文件读取或者存入信息需要FILE*呢？？
-    // 而你从键盘读取信息，从屏幕输出信息没有 键盘*， 屏幕*呢？？？
-    // 是因为任何一个c语言程序会默认打开三个流
-    // 1.stdin-标准输入流对应键盘
-    // 2.stdout-标准输出流对应屏幕
-    // 3.stderr-标准错误流对应屏幕
-    // 而对应文件你没有默认打开的流帮助你传递信息，所以需要FILE*指针
-    //  注意到fprintf是适用于所有输出流的，那么我们思考能不能用fprintf把信息输出到屏幕上?
-    // 答案是当然可以，需要你把前面的文件指针换成stdout，类似于用标准输出流??,而你给文件指针,就是打开文件流.fscanf,fgets,fgetc等等都是适合所有流,也就是只要你想可以给任何外设进行输入和输出.
+    那么我们思考，为何你打开文件，从文件读取或者存入信息需要FILE*呢？？
+    而你从键盘读取信息，从屏幕输出信息没有 键盘*， 屏幕*呢？？？
+    是因为任何一个c语言程序会默认打开三个流
+    1.stdin-标准输入流对应键盘
+    2.stdout-标准输出流对应屏幕
+    3.stderr-标准错误流对应屏幕
+
+    而对应文件你没有默认打开的流帮助你传递信息，所以需要FILE*指针
+    注意到fprintf是适用于所有输出流的，那么我们思考能不能用fprintf把信息输出到屏幕上?
+    答案是当然可以，需要你把前面的文件指针换成stdout，类似于用标准输出流??
+    而你给文件指针,就是打开文件流.fscanf,fgets,fgetc等等都是适合所有流,也就是只要你想可以给任何外设进行输入和输出.
+    */
+
 
     //~cpp网站上对fopen函数的解释也可以佐证上面
     /*
@@ -2488,4 +2494,269 @@
     可以通过调用 fclose 或 freopen 来取消返回的指针与文件的关联。所有打开的文件都会在正常程序终止时自动关闭。
     运行环境支持至少同时打开FOPEN_MAX个文件。
     */
+
+
+   //具体代码
+    { //@ 1.写文件--w--fprintf
+        #include <stdio.h>
+        #include <stdlib.h>
+        #include <string.h>
+        #include <errno.h> 
+        #include <assert.h>
+
+        int main()
+        {
+            //写文件
+            FILE *pFileText = fopen("text.txt", "w");
+            if(pFileText==NULL)
+            {
+                perror("fopen:");
+                //做三个错误判断的方式
+            }
+            if(pFileText==NULL)
+            {
+                printf("%s", strerror(errno));
+                return 1;//不是单一出口
+            }
+            if(pFileText==NULL)
+            {
+                exit(EXIT_FAILURE);//但是他不会报错，错误就停止了
+                // exit(1);
+                // 是不是还可以做一个assert
+            }
+            assert(pFileText != NULL);
+            // assert是判断，断言如果为真没事，如果是假就停止程序。
+            // 括号放你希望的样子，如果不是你想要的样子就帮你停止程序;
+            //~上述这四种停止方式个人感觉第一个足够方便
+
+            fprintf(pFileText, "HelloWorld!");//！错了两次注意这个地方，不是"pFileText"，应该是传文件指针
+
+            //fprintf(pFileText, "%s", "Hello World!");
+
+            fclose(pFileText);//传文件指针
+            return 0;
+        }
+    }
+
+
+    { //@ 读文件--r--fscanf
+        #include <stdio.h>
+        #include <stdlib.h>
+        #include <string.h>
+        #include <errno.h>
+        #include <assert.h>
+
+        int main()
+        {
+            // 读文件
+            FILE *pFileText = fopen("text.txt", "r");
+            if (pFileText == NULL)
+            {
+                perror("fopen:");
+                // 做三个错误判断的方式
+            }
+            if (pFileText == NULL)
+            {
+                printf("%s", strerror(errno));
+                return 1; // 不是单一出口
+            }
+            if (pFileText == NULL)
+            {
+                exit(EXIT_FAILURE); // 但是他不会报错，错误就停止了
+                // exit(1);
+                // 是不是还可以做一个assert
+            }
+            assert(pFileText != NULL);
+            // assert是判断，断言如果为真没事，如果是假就停止程序。
+            // 括号放你希望的样子，如果不是你想要的样子就帮你停止程序;
+            //~上述这四种停止方式个人感觉第一个足够方便
+
+            //fprintf(pFileText, "Hello World!"); // ！错了两次注意这个地方，不是"pFileText"，应该是传文件指针
+            char *pMallocChar = (char *)malloc(20);
+            if(pMallocChar==NULL)
+            {
+                perror("pMallocChar:");
+            }
+
+            fscanf(pFileText, "%s", pMallocChar);
+            //就相当于把文件里的信息往内存里输入，所以存到内存里需要你创建变量或者动态内存
+
+            printf("%s\n", pMallocChar);
+            printf(pMallocChar);//妙,但是有一个问题就是，不能打换行
+            fprintf(stdout, pMallocChar);//注意这个地方
+            //之前提到过就是说，fprintf是是适用于所有输出流，你传文件指针就可以把信息打印输出到文件中
+            //你想用fprintf打印到屏幕上就是，传stdout，标准输出流
+            // fprintf(pFileText, "%s", "Hello World!");
+
+            free(pMallocChar);
+            pMallocChar == NULL;
+
+            fclose(pFileText); // 传文件指针
+            return 0;
+        }
+
+        // ！注意任意数量的非空格字符，在找到的第一个空格字符处停止。你里面存了Hello World，%s 提取不到空格之后的内容
+        //因此打印出来的是三个Hello
+        //当我把上面写进文件的内容改成“HelloWorld”，就可以打印所有了
+    }
+
+
+    { //@ 追加--a--fprintf
+        #include <stdio.h>
+        #include <stdlib.h>
+        #include <string.h>
+        #include <errno.h>
+        #include <assert.h>
+
+        int main()
+        {
+            // 写文件之追加内容
+            FILE *pFileText = fopen("text.txt", "a");
+            if (pFileText == NULL)
+            {
+                perror("fopen:");
+                // 做三个错误判断的方式
+            }
+            if (pFileText == NULL)
+            {
+                printf("%s", strerror(errno));
+                return 1; // 不是单一出口
+            }
+            if (pFileText == NULL)
+            {
+                exit(EXIT_FAILURE); // 但是他不会报错，错误就停止了
+                // exit(1);
+                // 是不是还可以做一个assert
+            }
+            assert(pFileText != NULL);
+            // assert是判断，断言如果为真没事，如果是假就停止程序。
+            // 括号放你希望的样子，如果不是你想要的样子就帮你停止程序;
+            //~上述这四种停止方式个人感觉第一个足够方便
+
+            fprintf(pFileText, "HelloFlie");
+            // ！错了两次注意这个地方，不是"pFileText"，应该是传文件指针
+
+            // fprintf(pFileText, "%s", "Hello World!");
+
+            fclose(pFileText); // 传文件指针
+            return 0;
+        }
+        // 这里用a，成功追加
+
+        // r你用fprintf是没有用de，同理w你用scanf也是没有用的，
+        // ！并且还有副作用，w直接把原来的文件里面的信息全部销毁。
+        // 还有很多r+，w+，a+等等要用到，可以查cpp
+    }
+
+
+//fseek()文件函数，是可以定位位置读取你想要的信息，因为正常文件指针是从文件开头开始，往后一次读取，而当你想要直接从文件的某一位置开始，不过需要你知道偏移量，和你选择从文件头开始还是从末尾开始计算偏移量。
+//ftell( )来帮助你计算距离文件开头指针偏移量
+//当你把文件指针东用西永，自己记不清指针指向那里，就可以用rewind()函数，帮你把文件指针回到开头。
+//知道有这些函数用到的时候去cpp网站查一查，多用几次就会啦。
+
+文本文件与二进制文件，数据在内存以二进制的形式存储，如果不加转换的输出到外存，就是二进制文件，如果要求在外存上以ascii码的形式存储，则需要在存储前转换，以ASCII字符的形式存储的文件就是文本文件。 
+
+以10000为例，一个数据是怎么存储到内存里面去的呢，字符一律以ASCII形式存储，数值型数据既可以用ASCII形式存储，也可以用二进制形式存储，1000以ASCII码形式存储占5个字节，一个字符一个字节，1，0，0，0，0，如果以这种形式输出就是文本文件，而以二进制形式存储就占用4个字节，输出就是二进制文件。
+各有利弊如数字1，ASCII就一个字节，以二进制形式还是四字节
+eof，end of file
+p127三个内存函数
+p160文件的后部分
+p161也不听啦，预处理的东东
+6.文本文件和二进制文件
+7.文件读取结束的判定
+8.文件缓冲区
+后面没听
+没看
+//@ 鹏哥c语言暂时完结撒花啦现在要去搞一下链表然后就去准备c考试之后十几天就见不到你咯要去复习高数和大英咯我们寒假再见吧
+//！！！12-25-2023！！！！
+}
+
+22. sscanf 以及 sprintf
+{
+    //！什么是sscanf-sprintf？？ What
+    /*
+    首先我们先思考，我们目前学了 printf-scanf ，fprintf-fscanf 。
+    其中printf是标准输出对应屏幕
+        scanf是标准输入对应键盘
+    而由21.文件这一节的笔记可知，fprintf-fscanf适用于文件，同样可以适用于所有输入输出流
+    根据字面理解，sscanf-sprintf是对字符串的;
+
+    //@ 标准定义 
+    int sscanf(const char *s, const char *format, ...);
+    int sprintf(char *str, const char *format, ...);
+    */
+    
+
+    //！ 怎么用？？ How
+    {
+        #include <stdio.h>
+        #include <string.h>
+        struct Student
+        {
+            char name[20];
+            int age;
+            double score;
+        };
+        // sscanf()从字符串往外读，读到内存里面
+        // sprintf()从内存，往字符串里面写
+        typedef struct
+        {
+            char name[20];
+            int age;
+            double score;
+        } StudentText;
+
+        struct
+        {
+            char name[20];
+            int age;
+            double score;
+        } StudentC;
+
+        int main()
+        {
+            StudentText StudentB = {{"B"}, 18, 100};
+            struct Student StudentA = {{"A"}, 18, 100};
+            StudentC.age = 18;
+            StudentC.name[20] = "C";
+            // StudentC = {"C", 18, 100};//！err
+            // 为何这个地方会错嘞？
+            // 因为此时StudentC是一个结构体变量，你用结构体变量就要.age.name等等
+            // 那为何上面能用呢？？
+            // 上面是再定义时同时完成初始化
+            // StudentB = {"11223", 23, 123};//！err
+            // 你看这样也会出错，因为定义完了之后都是引用，引用都是要加.的
+            strcpy(StudentC.name, "C");
+
+            // 上面是进一步加深对结构体的理解
+            // 下面开始探究sscanf与sprintf
+            char arrText[100] = {0};
+            // 定义一个字符数组来承载
+            sprintf(arrText, "%s %d %lf \n", StudentA.name, StudentA.age, StudentA.score);
+            // 把内存中的结构体数据写入字符数组中
+            printf("%s", arrText);
+            // 打印数组数据看看结果
+            // 结果成功打印出A 18 100.000000
+
+            // 下面看sscanf
+            sscanf(arrText, "%s %d %lf", StudentC.name, &(StudentC.age), &(StudentC.score));
+            // 把字符数组中的数据往外写，写到结构体c中。
+            printf("%s %d %lf \n", StudentC.name, StudentC.age, StudentC.score);
+            // 打印结果
+            // A 18 100.000000
+            // A 18 100.000000
+
+            return 0;
+        }
+    }
+
+
+    //！为何要这样用？？ Why
+    {
+        sprintf它实现了把整个结构体的数据格式化输出到一个字符数组里面
+        sscanf它实现了把字符数组里面的数据格式化输入到结构体中
+        //结构体中有很多不同类型的元素，int，double，char，格式化帮你把这些不同的数据转换成可以存储在字符串里面的数据
+        //目前还象不太出应用场景知道了解 即可
+    }
+
 }

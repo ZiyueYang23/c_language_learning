@@ -15,6 +15,7 @@ int initContact(contacts *ps) // 改成int需要想想
 {
     assert(ps != NULL);
 
+
     ps->counter = 0;
     ps->data = (pInformation *)calloc(STA_NUM, sizeof(pInformation));
     // 这是指针承载创建内存的首地址
@@ -25,8 +26,55 @@ int initContact(contacts *ps) // 改成int需要想想
         return 1;
     }
     ps->capacity = STA_NUM; // 这个是精髓，创造一个容量，当容量和数量相等的时候就扩容
+
+    LoadContact(ps);
     return 0;
 }
+
+void LoadContact(contacts *ps)
+{
+    FILE *pfRead = fopen("contact.txt", "rb");
+    if (pfRead == NULL)
+    {
+        perror("LoadContact");
+        return;
+    }
+    pInformation tmp = {0};
+
+    while(fread(&tmp,sizeof(pInformation),1,pfRead)==1)
+    {
+        CheckAddCapacity(ps);
+
+        ps->data[ps->counter] = tmp;
+        ps->counter++;
+    }
+}
+
+//自己尝试做的版本到但是有点小问题
+// void LoadContact(contacts *ps)
+// {
+//     int ret = 0;
+//     FILE *pfRead = fopen("contact.txt", "r");
+//     if(pfRead==NULL)
+//     {
+//         perror("LoadContact");
+//         return;
+//     }
+//     pInformation tmp = {0};
+//     do
+//     {
+//         int i = 0;
+//         int ret =fscanf(pfRead, "%s %d %s %s %s", tmp.name, &(tmp.age), tmp.sex, tmp.tele, tmp.addr);
+//         if(ret!=EOF)
+//         {
+//             CheckAddCapacity(ps);
+//             ps->data[i] = tmp;
+//             ps->counter++;
+//             i++;
+//         }
+
+//     } while (ret != EOF);
+// }
 // 静态版本
 //  void initContact(contacts *ps)
 //  {
@@ -44,13 +92,11 @@ void DestroyContact(contacts *ps) // 有借有还
     ps->data = NULL;
 }
 
-void add(contacts *ps)
+void CheckAddCapacity(contacts*ps)
 {
-    assert(ps != NULL);
-
     if (ps->capacity == ps->counter)
     {
-        pInformation *ptr = (pInformation *)realloc(ps->data, (ps->capacity+ADD_NUM)* sizeof(pInformation));
+        pInformation *ptr = (pInformation *)realloc(ps->data, (ps->capacity + ADD_NUM) * sizeof(pInformation));
         //~细细体会
         // 这个地方其实可以直接用ps->data但是打好基础养好习惯现在是项目小内存小，不需要考虑内存问题，以后就不一定了
         if (ptr == NULL)
@@ -65,30 +111,36 @@ void add(contacts *ps)
             ps->capacity += ADD_NUM;
         }
     }
-    else
+}
+
+void add(contacts *ps)
+{
+    assert(ps != NULL);
+
+    CheckAddCapacity(ps);
+
+    printf("请输入姓名:>");
+    scanf("%s", ps->data[ps->counter].name); // 我想加一个返回功能就是输错了返回上一级
+
+    if (0 == strcmp(ps->data[ps->counter].name, "9"))
     {
-        printf("请输入姓名:>");
-        scanf("%s", ps->data[ps->counter].name); // 我想加一个返回功能就是输错了返回上一级
-
-        if (0 == strcmp(ps->data[ps->counter].name, "9"))
-        {
-            printf("返回上一级\n");
-            return; //~初步做了一个返回的东东
-        }
-
-        printf("请输入年龄:>");
-        scanf("%d", &(ps->data[ps->counter].age)); // ！ 这个地方一定要注意，&，其他都是数组数组名就是首元素地址
-
-        printf("请输入性别:>");
-        scanf("%s", ps->data[ps->counter].sex);
-
-        printf("请输入电话:>");
-        scanf("%s", ps->data[ps->counter].tele);
-
-        printf("请输入地址:>");
-        scanf("%s", ps->data[ps->counter].addr);
-        ps->counter++;
+        printf("返回上一级\n");
+        return; //~初步做了一个返回的东东
     }
+
+    printf("请输入年龄:>");
+    scanf("%d", &(ps->data[ps->counter].age)); // ！ 这个地方一定要注意，&，其他都是数组数组名就是首元素地址
+
+    printf("请输入性别:>");
+    scanf("%s", ps->data[ps->counter].sex);
+
+    printf("请输入电话:>");
+    scanf("%s", ps->data[ps->counter].tele);
+
+    printf("请输入地址:>");
+    scanf("%s", ps->data[ps->counter].addr);
+    ps->counter++;
+    printf("添加成功\n");
 }
 // 静态版本
 //  void add(contacts *ps)
@@ -184,6 +236,7 @@ void del(contacts *ps)
         }
         ps->counter--; // ！有bug就是你输入了不是这里面的数字也会误删
         // 目前想到的就只能做一个回退，还不错
+        //删除的时候容量没变
         printf("删除成功\n");
     }
 }
@@ -426,4 +479,41 @@ void sort(contacts *ps)
     printf("排序成功\n");
 
     show(ps);
+}
+//我自己做的版本
+// void SaveContact(const contacts *ps)
+// {
+//     FILE *pfWrite = fopen("contact.txt", "w");
+//     //你在运行程序的时候进行增删查改，都不管打开的时候全都清空，关闭之前把所有修改的全都存进去。
+//     if(pfWrite==NULL)
+//     {
+//         perror("SaveContact");
+//         return;
+//     }
+//     //写文件
+//     for (int i = 0; i < ps->counter;i++)
+//     {
+//         fprintf(pfWrite, "%s %d %s %s %s \n", ps->data[i].name, ps->data[i].age, ps->data[i].sex, ps->data[i].tele, ps->data[i].addr);
+//     }
+//     fclose(pfWrite);
+//     pfWrite == NULL;
+// }
+
+void SaveContact(const contacts *ps)
+{
+    FILE *pfWrite = fopen("contact.txt", "wb");
+    // 你在运行程序的时候进行增删查改，都不管打开的时候全都清空，关闭之前把所有修改的全都存进去。
+    if (pfWrite == NULL)
+    {
+        perror("SaveContact");
+        return;
+    }
+    // 写文件
+    for (int i = 0; i < ps->counter; i++)
+    {
+        fwrite(ps->data + i, sizeof(pInformation), 1, pfWrite);
+    }
+
+    fclose(pfWrite);
+    pfWrite == NULL;
 }

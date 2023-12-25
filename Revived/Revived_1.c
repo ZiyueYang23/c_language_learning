@@ -1397,32 +1397,208 @@
 //~有点浮躁,想赶快开始新的,坚持住aaa
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h> 
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include <errno.h> 
+// #include <assert.h>
 
-int main()
-{
-    FILE *pFileText = fopen("text.txt", "w");
-    if(pFileText==NULL)
-    {
-        perror("fopen:");
-        //做三个错误判断的方式
-    }
-    if(pFileText==NULL)
-    {
-        printf("%s", strerror(errno));
-        return 1;//不是单一出口
-    }
-    if(pFileText==NULL)
-    {
-        exit(1);
-        //是不是还可以做一个assert
-    }
+// int main()
+// {
+//     //写文件
+//     FILE *pFileText = fopen("text.txt", "w");
+//     if(pFileText==NULL)
+//     {
+//         perror("fopen:");
+//         //做三个错误判断的方式
+//     }
+//     if(pFileText==NULL)
+//     {
+//         printf("%s", strerror(errno));
+//         return 1;//不是单一出口
+//     }
+//     if(pFileText==NULL)
+//     {
+//         exit(EXIT_FAILURE);//但是他不会报错，错误就停止了
+//         // exit(1);
+//         // 是不是还可以做一个assert
+//     }
+//     assert(pFileText != NULL);
+//     // assert是判断，断言如果为真没事，如果是假就停止程序。
+//     // 括号放你希望的样子，如果不是你想要的样子就帮你停止程序;
+//     //~上述这四种停止方式个人感觉第一个足够方便
 
-    fprintf(pFileText, "%s", "Hello World!");
+//     fprintf(pFileText, "HelloWorld!");//！错了两次注意这个地方，不是"pFileText"，应该是传文件指针
 
-    fclose("text.txt");
-    return 0;
-}
+//     //fprintf(pFileText, "%s", "Hello World!");
+
+//     fclose(pFileText);//传文件指针
+//     return 0;
+// }
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include <errno.h>
+// #include <assert.h>
+
+// int main()
+// {
+//     // 读文件
+//     FILE *pFileText = fopen("text.txt", "r");
+//     if (pFileText == NULL)
+//     {
+//         perror("fopen:");
+//         // 做三个错误判断的方式
+//     }
+//     if (pFileText == NULL)
+//     {
+//         printf("%s", strerror(errno));
+//         return 1; // 不是单一出口
+//     }
+//     if (pFileText == NULL)
+//     {
+//         exit(EXIT_FAILURE); // 但是他不会报错，错误就停止了
+//         // exit(1);
+//         // 是不是还可以做一个assert
+//     }
+//     assert(pFileText != NULL);
+//     // assert是判断，断言如果为真没事，如果是假就停止程序。
+//     // 括号放你希望的样子，如果不是你想要的样子就帮你停止程序;
+//     //~上述这四种停止方式个人感觉第一个足够方便
+
+//     //fprintf(pFileText, "Hello World!"); // ！错了两次注意这个地方，不是"pFileText"，应该是传文件指针
+//     char *pMallocChar = (char *)malloc(20);
+//     if(pMallocChar==NULL)
+//     {
+//         perror("pMallocChar:");
+//     }
+
+//     fscanf(pFileText, "%s", pMallocChar);
+//     //就相当于把文件里的信息往内存里输入，所以存到内存里需要你创建变量或者动态内存
+
+//     printf("%s\n", pMallocChar);
+//     printf(pMallocChar);//妙,但是有一个问题就是，不能打换行
+//     fprintf(stdout, pMallocChar);//注意这个地方
+//     //之前提到过就是说，fprintf是是适用于所有输出流，你传文件指针就可以把信息打印输出到文件中
+//     //你想用fprintf打印到屏幕上就是，传stdout，标准输出流
+//     // fprintf(pFileText, "%s", "Hello World!");
+
+//     free(pMallocChar);
+//     pMallocChar == NULL;
+
+//     fclose(pFileText); // 传文件指针
+//     return 0;
+// }
+
+// // ！注意任意数量的非空格字符，在找到的第一个空格字符处停止。你里面存了Hello World，%s 提取不到空格之后的内容
+// //因此打印出来的是三个Hello
+// //当我把上面写进文件的内容改成“HelloWorld”，就可以打印所有了
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include <errno.h>
+// #include <assert.h>
+
+// int main()
+// {
+//     // 写文件之追加内容
+//     FILE *pFileText = fopen("text.txt", "a");
+//     if (pFileText == NULL)
+//     {
+//         perror("fopen:");
+//         // 做三个错误判断的方式
+//     }
+//     if (pFileText == NULL)
+//     {
+//         printf("%s", strerror(errno));
+//         return 1; // 不是单一出口
+//     }
+//     if (pFileText == NULL)
+//     {
+//         exit(EXIT_FAILURE); // 但是他不会报错，错误就停止了
+//         // exit(1);
+//         // 是不是还可以做一个assert
+//     }
+//     assert(pFileText != NULL);
+//     // assert是判断，断言如果为真没事，如果是假就停止程序。
+//     // 括号放你希望的样子，如果不是你想要的样子就帮你停止程序;
+//     //~上述这四种停止方式个人感觉第一个足够方便
+
+//     fprintf(pFileText, "HelloFlie"); 
+//     // ！错了两次注意这个地方，不是"pFileText"，应该是传文件指针
+
+//     // fprintf(pFileText, "%s", "Hello World!");
+
+//     fclose(pFileText); // 传文件指针
+//     return 0;
+// }
+//这里用a，成功追加
+
+//r你用fprintf是没有用de，同理w你用scanf也是没有用的，
+//！并且还有副作用，w直接把原来的文件里面的信息全部销毁。
+//还有很多r+，w+，a+等等要用到，可以查cpp
+
+
+// #include <stdio.h>
+// #include <string.h>
+// struct Student 
+// {
+//     char name[20];
+//     int age;
+//     double score;
+// };
+// //sscanf()从字符串往外读，读到内存里面
+// //sprintf()从内存，往字符串里面写
+// typedef struct 
+// {
+//     char name[20];
+//     int age;
+//     double score;
+// } StudentText;
+
+// struct
+// {
+//     char name[20];
+//     int age;
+//     double score;
+// }StudentC;
+
+
+// int main()
+// {
+//     StudentText StudentB = {{"B"}, 18, 100};
+//     struct Student StudentA = {{"A"}, 18, 100};
+//     StudentC.age = 18;
+//     StudentC.name[20] = "C";
+//    // StudentC = {"C", 18, 100};//！err
+//     //为何这个地方会错嘞？
+//     //因为此时StudentC是一个结构体变量，你用结构体变量就要.age.name等等
+//     //那为何上面能用呢？？
+//     //上面是再定义时同时完成初始化
+//     //StudentB = {"11223", 23, 123};//！err
+//     //你看这样也会出错，因为定义完了之后都是引用，引用都是要加.的
+//     strcpy(StudentC.name, "C");
+
+//     //上面是进一步加深对结构体的理解
+//     //下面开始探究sscanf与sprintf
+//     char arrText[100] = {0};
+//     //定义一个字符数组来承载
+//     sprintf(arrText, "%s %d %lf \n", StudentA.name, StudentA.age, StudentA.score);
+//     //把内存中的结构体数据写入字符数组中
+//     printf("%s", arrText);
+//     //打印数组数据看看结果
+//     //结果成功打印出A 18 100.000000
+
+//     //下面看sscanf
+//     sscanf(arrText, "%s %d %lf", StudentC.name, &(StudentC.age), &(StudentC.score));
+//     //把字符数组中的数据往外写，写到结构体c中。
+//     printf("%s %d %lf \n", StudentC.name, StudentC.age, StudentC.score);
+//     //打印结果
+//     //A 18 100.000000
+//     //A 18 100.000000
+
+//     return 0;
+// }
+

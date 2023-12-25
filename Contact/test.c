@@ -34,7 +34,9 @@ int main()
 
         if (input == EXIT)
         {
+            SaveContact(&contact);
             DestroyContact(&contact);
+            printf("保存成功\n");
             printf("退出通讯录\n");
         }
         else if (input == BACK)
@@ -68,3 +70,6 @@ int main()
 // 12-24-2023
 // 大致完成动态版本
 // 修了一下输错序号的bug，还不错
+
+// 12-25-2023
+// 文件版本完成大致没啥问题了;

@@ -60,7 +60,13 @@ void sort(contacts *ps);
 
 int cmpPinformationByName(const void *e1, const void *e2);
 
+void SaveContact(const contacts *ps);
+
 // 函数内使用的找到
 int discover(const char ret[], const contacts *ps);
+
+void CheckAddCapacity(contacts *ps);
+
+void LoadContact(contacts *ps);
 
 #endif
