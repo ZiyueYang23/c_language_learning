@@ -1396,11 +1396,10 @@
 
 //~有点浮躁,想赶快开始新的,坚持住aaa
 
-
 // #include <stdio.h>
 // #include <stdlib.h>
 // #include <string.h>
-// #include <errno.h> 
+// #include <errno.h>
 // #include <assert.h>
 
 // int main()
@@ -1526,7 +1525,7 @@
 //     // 括号放你希望的样子，如果不是你想要的样子就帮你停止程序;
 //     //~上述这四种停止方式个人感觉第一个足够方便
 
-//     fprintf(pFileText, "HelloFlie"); 
+//     fprintf(pFileText, "HelloFlie");
 //     // ！错了两次注意这个地方，不是"pFileText"，应该是传文件指针
 
 //     // fprintf(pFileText, "%s", "Hello World!");
@@ -1534,16 +1533,15 @@
 //     fclose(pFileText); // 传文件指针
 //     return 0;
 // }
-//这里用a，成功追加
+// 这里用a，成功追加
 
-//r你用fprintf是没有用de，同理w你用scanf也是没有用的，
-//！并且还有副作用，w直接把原来的文件里面的信息全部销毁。
-//还有很多r+，w+，a+等等要用到，可以查cpp
-
+// r你用fprintf是没有用de，同理w你用scanf也是没有用的，
+// ！并且还有副作用，w直接把原来的文件里面的信息全部销毁。
+// 还有很多r+，w+，a+等等要用到，可以查cpp
 
 // #include <stdio.h>
 // #include <string.h>
-// struct Student 
+// struct Student
 // {
 //     char name[20];
 //     int age;
@@ -1551,7 +1549,7 @@
 // };
 // //sscanf()从字符串往外读，读到内存里面
 // //sprintf()从内存，往字符串里面写
-// typedef struct 
+// typedef struct
 // {
 //     char name[20];
 //     int age;
@@ -1564,7 +1562,6 @@
 //     int age;
 //     double score;
 // }StudentC;
-
 
 // int main()
 // {
@@ -1602,3 +1599,175 @@
 //     return 0;
 // }
 
+// //大到小
+// #include <stdio.h>  /* printf */
+// #include <stdlib.h> /* qsort */
+
+// int values[] = {40, 10, 100, 90, 20, 25};
+
+// int compare(const void *a, const void *b)
+// {
+//     return (*(int *)b - *(int *)a);
+// }
+
+// int main()
+// {
+//     int n;
+//     qsort(values, 6, sizeof(int), compare);
+//     for (n = 0; n < 6; n++)
+//         printf("%d ", values[n]);
+//     return 0;
+// }
+// //小到大
+// #include <stdio.h>  /* printf */
+// #include <stdlib.h> /* qsort */
+
+// int values[] = {40, 10, 100, 90, 20, 25};
+
+// int compare(const void *a, const void *b)
+// {
+//     return (*(int *)a - *(int *)b);
+// }
+
+// int main()
+// {
+//     int n;
+//     qsort(values, 6, sizeof(int), compare);
+//     for (n = 0; n < 6; n++)
+//         printf("%d ", values[n]);
+//     return 0;
+// }
+
+// int compareMyType(const void *a, const void *b)
+// {
+//     if (*(MyType *)a < *(MyType *)b)
+//         return -1;
+//     if (*(MyType *)a == *(MyType *)b)
+//         return 0;
+//     if (*(MyType *)a > *(MyType *)b)
+//         return 1;
+// }
+// // ！注意qsort默认是小到大排序
+// //~怎么理解呢，e1，e2进来如果是e1>e2就返回大于0的数并且交换，但是你如果想大到小的话就需要返回小于0的数.
+// //~就相当于，qsort这个函数只看你的返回值是否大于0大于0就会交换，返回小于0的就不交换。如果你想小到大就ife1>e2,return 1;return的语句就想到于swap的意思。如果你想大到小就ife1<e2,(swap)return 1;if(e2<e1),return 0;符合我的小到大就不需要交换就return-1.
+
+// #include <stdio.h>
+// int main()
+// {
+//     int x = 0;
+//     int y = 0;
+//     int remainder = 0;
+//     int tmp = 0;
+
+//     scanf("%d%d", &x, &y);
+//     if(x<y)
+//     {
+//         tmp = x;
+//         x = y;
+//         y = tmp;
+//     }
+
+//     tmp = x * y;
+
+//     while (y != 0)
+//     {
+//         remainder = x % y;
+//         x = y;
+//         y = remainder;
+//     }
+
+//     printf("最大公约数为%d,最小公倍数为%d", x, tmp / x);
+// }
+
+// #include <stdio.h>
+// int main()
+// {
+
+//     for (int i = 2; i <= 100;i++)
+//     {
+//         int flag = 1;
+
+//         for (int j = 2; j < i;j++)
+//         {
+//             if(i%j==0)
+//             {
+//                 flag = 0;
+//             }
+//         }
+
+//         if(flag==1)
+//         {
+//             printf("%d ", i);
+//         }
+//     }
+//         return 0;
+// }
+
+// #include <stdio.h>
+// #include <math.h>
+// int main()
+// {
+
+//     for (int i = 1; i <= 100; i++)
+//     {
+//         int tmp = (int)sqrt(i);
+//         if(tmp*tmp==i)
+//         {
+//             printf("%d ", i);
+//         }
+
+//     }
+
+//     return 0;
+// }
+
+//素数精简一点的
+#include <stdio.h>
+
+int IsPrime(int number);
+
+int main()
+{
+    int cnt = 0;
+
+    for (int i = 1; i < 2000; i++)
+    {
+
+        if (IsPrime(i) == 1)
+        {
+            printf("%-6d", i);
+            cnt++;
+        }
+
+        if (cnt == 8)
+        {
+            printf("\n");
+            cnt = 0;
+        }
+    }
+
+    return 0;
+}
+
+int IsPrime(int number)
+{
+    int temp = 1;
+
+    if (number == 1 || (number % 2 == 0 && number != 2))
+    {
+        temp = 0;
+    }
+    else
+    {
+        for (int j = 3; j < number; j += 2)
+        {
+            if (number % j == 0)
+            {
+                temp = 0;
+                break;
+            }
+        }
+    }
+
+    return temp;
+}

@@ -132,7 +132,8 @@
 
 5.输出素数
 {
-    5.1范围 for (int a = 2; a < 100; a++)
+    5.1范围 
+    for (int a = 2; a < 100; a++)
     {
         int tmp = 1;
         for (int c = 2; c < a; c++)
@@ -149,7 +150,8 @@
         }
     }
 
-    5.2个数 for (int a = 2, cnt = 0; cnt < 100; a++)
+    5.2个数 
+    for (int a = 2, cnt = 0; cnt < 100; a++)
     {
         int tmp = 1;
         for (int c = 2; c < a; c++)
@@ -232,12 +234,14 @@ out:
 
 7.想隔一个反转符号的函数 sign符号函数的用法
 { //  1+1/2+1/3+....+1/n  的表达式
-    for (double sum = 0.0 int a = 0; a < n; a++)
+    for (double sum = 0.0 ,int a = 0; a < n; a++)
     {
         sum += 1.0 / a;
     }
 
-    加大难度 1 - 1 / 2 + 1 / 3 - 1 / 4 + ....+ 1 / n 的表达式 double sign = 1.0 for (double sum = 0.0 int a = 0; a < n; a++)
+    加大难度 1 - 1 / 2 + 1 / 3 - 1 / 4 + ....+ 1 / n 的表达式
+    double sign = 1.0 
+    for (double sum = 0.0 int a = 0; a < n; a++)
     {
         sum += sign / a;
         sign = -sign;

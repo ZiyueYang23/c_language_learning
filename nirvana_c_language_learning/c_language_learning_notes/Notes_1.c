@@ -1064,6 +1064,63 @@
                 }
             }
 
+            {//@ 补充理解
+                
+                //大到小
+                #include <stdio.h>  /* printf */
+                #include <stdlib.h> /* qsort */
+
+                int values[] = {40, 10, 100, 90, 20, 25};
+
+                int compare(const void *a, const void *b)
+                {
+                    return (*(int *)b - *(int *)a);
+                }
+
+                int main()
+                {
+                    int n;
+                    qsort(values, 6, sizeof(int), compare);
+                    for (n = 0; n < 6; n++)
+                        printf("%d ", values[n]);
+                    return 0;
+                }
+                //小到大
+                #include <stdio.h>  /* printf */
+                #include <stdlib.h> /* qsort */
+
+                int values[] = {40, 10, 100, 90, 20, 25};
+
+                int compare(const void *a, const void *b)
+                {
+                    return (*(int *)a - *(int *)b);
+                }
+
+                int main()
+                {
+                    int n;
+                    qsort(values, 6, sizeof(int), compare);
+                    for (n = 0; n < 6; n++)
+                        printf("%d ", values[n]);
+                    return 0;
+                }
+
+                int compareMyType(const void *a, const void *b)
+                {
+                    if (*(MyType *)a < *(MyType *)b)
+                        return -1;
+                    if (*(MyType *)a == *(MyType *)b)
+                        return 0;
+                    if (*(MyType *)a > *(MyType *)b)
+                        return 1;
+                }
+                // ！注意qsort默认是小到大排序
+                //~怎么理解呢，e1，e2进来如果是e1>e2就返回大于0的数并且交换，但是你如果想大到小的话就需要返回小于0的数.
+                //~就相当于，qsort这个函数只看你的返回值是否大于0大于0就会交换，返回小于0的就不交换。如果你想小到大就ife1>e2,return 1;return的语句就想到于swap的意思。如果你想大到小就ife1<e2,(swap)return 1;if(e2<e1),return 0;符合我的小到大就不需要交换就return-1.
+
+                //@你就记住默认是小到大如果你想大到小就加个符号
+            }
+
             // 注意sizeof的用法
             // int a[5];
             // sizeof(a),只要是数组名单独用就是代表整体的
