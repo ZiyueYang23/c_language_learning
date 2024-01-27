@@ -265,3 +265,44 @@
 // //     }
 // // }
 
+
+//！1-27 nirvana start
+
+//@ Complex number calculator
+#include <stdio.h>
+
+typedef struct
+{
+    double realPart;
+    double imagPart;
+} Complex;
+
+void AddComplex(Complex *z1, Complex *z2);
+
+void AssignComplex(Complex*z1, Complex*z2);
+
+int main(void)
+{
+    Complex z1 = {0.0, 0.0};
+    Complex z2 = {0.0, 0.0};
+
+    AssignComplex(&z1, &z2);
+    AddComplex(&z1, &z2);
+
+    return 0;
+}
+void AssignComplex(Complex *z1, Complex *z2)
+{
+    printf("请输入需要计算两复数的值:>");
+    scanf("%lf%lf", &z1->realPart, &z1->imagPart);
+    scanf("%lf%lf", &z2->realPart, &z2->imagPart);
+}
+void AddComplex(Complex *z1, Complex *z2)
+{
+    Complex z3 = {0.0, 0.0};
+
+    z3.realPart = z1->realPart + z2->realPart;
+    z3.imagPart = z1->imagPart + z2->imagPart;
+
+    printf("z1+z2=%f+(%f)i", z3.realPart, z3.imagPart);
+}
